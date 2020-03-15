@@ -104,3 +104,4 @@ echo 'output:<br>'.$XssReflex;
 ![](images/usexss.png)
 ## 实验效果
 >video/xss漏洞搭建及利用平台.mp4
+[在线视频](https://www.bilibili.com/video/av95722607)

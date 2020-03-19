@@ -8,6 +8,7 @@ windows+apache+php
 
 ### 一、编写一个简单的xss.html,本次实验代码如下。
 * 注意编码格式
+>code/xss.html
 ```
 <html>
 <body>
@@ -79,6 +80,7 @@ httpd -help  查看帮助
 ![](images/php-ok.png)
 ### 四、xss漏洞利用
 xss.php代码如下
+>code/xss.php
 ```
 <html>
 <head> 
@@ -105,3 +107,12 @@ echo 'output:<br>'.$XssReflex;
 ## 实验效果
 >video/xss漏洞搭建及利用平台.mp4
 [在线视频](https://www.bilibili.com/video/av95722607)
+## 另一种实验方法：vs code 调试运行.php文件
+[如何在vscode配置php开发环境](https://blog.csdn.net/summer2day/article/details/78534352)  
+具体实验过程和效果
+>video/xss漏洞搭建及利用平台.mp4
+
+视频中缺漏：  
+1. 在vs code的setting.json中添加php的路径：  
+“php.validate.executablePath”: “D:/xampp/php/php.exe” 
+2. vs code安装完成后下载php debug插件

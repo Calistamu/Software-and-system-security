@@ -111,7 +111,7 @@ echo 'output:<br>'.$XssReflex;
 [如何在vscode配置php开发环境](https://blog.csdn.net/summer2day/article/details/78534352)  
 具体实验过程和效果
 >video/xss漏洞搭建及利用平台.mp4
-
+[在线视频](https://www.bilibili.com/video/av97632428)
 视频中缺漏：  
 1. 在vs code的setting.json中添加php的路径：  
 “php.validate.executablePath”: “D:/xampp/php/php.exe” 

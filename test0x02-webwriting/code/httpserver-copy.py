@@ -3,7 +3,7 @@
 import sys
 import cgi
 from http.server import HTTPServer, BaseHTTPRequestHandler
-import sqlite3
+
 
 class MyHTTPRequestHandler(BaseHTTPRequestHandler):
     field_name = 'a'
@@ -33,7 +33,6 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(content)
 
     def do_POST(self):
-        ans='OK'
         form_data = cgi.FieldStorage(
             fp=self.rfile,
             headers=self.headers,
@@ -46,30 +45,12 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
             input_data = form_data[self.field_name].value
             file = open("."+self.path, "wb")
             file.write(input_data.encode())
-        
-        elif 'ins' in fields: # 当前为录入成绩
-            cid, sid = form_data['course_d'].value, form_data['student_id'].value
-            res = form_data['ins'].value
-            conn = sqlite3.connect('edu.db')
-            c = conn.cursor()
-            sql = "insert into studentsinfo values (%s, %s, %s)"%(course_id, student_id, grades)
-            c.execute(sql)
-            conn.commit()
-            conn.close()
-        else:   # 当前为成绩查询
-            cid, sid = form_data['course_id'].value, form_data['student_id'].value
-            conn = sqlite3.connect('edu.db')
-            c = conn.cursor()
-            sql = "select res from studentsinfo where cid=%s and sid=%s"%(course_id, student_id)
-            c.execute(sql)
-            ans = "%s 同学 %s 课程的成绩为 " % (student_id, course_id) + str(c.fetchone()[0])
-            conn.close()
-
 
         self.send_response(200)
         self.send_header("Content-type", "text/html")
         self.end_headers()
-        self.wfile.write(bytes(str("<html lang='zh-CN'><head><meta charset='utf-8'></head><body>%s</body></html>"%(ans)), 'utf-8'))
+        self.wfile.write(b"<html><body>OK</body></html>")
+
 
 class MyHTTPServer(HTTPServer):
     def __init__(self, host, port):

@@ -23,15 +23,12 @@ create table studentsinfo(course_id INTEGER,student_id INTEGER,grades INTEGER);
 3. 更改httpserver.py实现成绩录入和成绩查询。
 >code/httpserver.py是服务器代码
 ## 实验效果
->video/web开发演示效果.mp4
-
-<video src="https://github.com/Calistamu/Software-and-system-security/tree/test0x02-webwriting/test0x02-webwriting/video/web开发演示效果.mp4" autoplay="autoplay" height=498 width=510 >
-</video>
-
+![](gif/效果演示.gif)
 ## 实验问题
 在查询数据后进行显示时，数据显示报错搞了很久，报错信息如下图所示。
 ![](images/wrong.png)  
 [解决办法](https://www.e-learn.cn/topic/3001956)
 ## 实验参考
 [sqlite教程](https://docs.python.org/3/library/sqlite3.html)  
-[httpserver教程](https://docs.python.org/3/library/http.server.html)
+[httpserver教程](https://docs.python.org/3/library/http.server.html)  
+[MP4-to-gif-在线网站](https://ezgif.com/video-to-gif)

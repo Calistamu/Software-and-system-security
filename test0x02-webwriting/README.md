@@ -25,7 +25,8 @@ create table studentsinfo(course_id INTEGER,student_id INTEGER,grades INTEGER);
 ## 实验效果
 >video/web开发演示效果.mp4
 
-<video src="video/web开发演示效果.mp4" autoplay="autoplay" height=498 width=510 ></video>
+<video src="https://github.com/Calistamu/Software-and-system-security/tree/test0x02-webwriting/test0x02-webwriting/video/web开发演示效果.mp4" autoplay="autoplay" height=498 width=510 >
+</video>
 
 ## 实验问题
 在查询数据后进行显示时，数据显示报错搞了很久，报错信息如下图所示。

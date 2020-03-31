@@ -23,7 +23,9 @@ create table studentsinfo(course_id INTEGER,student_id INTEGER,grades INTEGER);
 3. 更改httpserver.py实现成绩录入和成绩查询。
 >code/httpserver.py是服务器代码
 ## 实验效果
-![](gif/效果演示.gif)
+>video/web开发演示效果.mp4
+* gif展示的效果不清晰，因此mp4文件
+![](video/效果演示.gif)
 ## 实验问题
 在查询数据后进行显示时，数据显示报错搞了很久，报错信息如下图所示。
 ![](images/wrong.png)  

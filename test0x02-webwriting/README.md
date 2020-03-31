@@ -18,7 +18,7 @@ create table studentsinfo(course_id INTEGER,student_id INTEGER,grades INTEGER);
 2. 编写html代码。
 >code/insert.html是成绩录入页面
 >code/select.html是成绩查询页面
-![](images/webpage.png)
+![](images/webpages.png)
 3. 更改httpserver.py实现成绩录入和成绩查询。
 >code/httpserver.py是服务器代码
 ## 实验效果
@@ -29,5 +29,5 @@ create table studentsinfo(course_id INTEGER,student_id INTEGER,grades INTEGER);
 ![](images/wrong.png)  
 [解决办法](https://www.e-learn.cn/topic/3001956)
 ## 实验参考
-[sqlite教程](https://docs.python.org/3/library/sqlite3.html)
+[sqlite教程](https://docs.python.org/3/library/sqlite3.html)  
 [httpserver教程](https://docs.python.org/3/library/http.server.html)

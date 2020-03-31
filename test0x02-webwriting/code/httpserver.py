@@ -68,7 +68,8 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
             c.execute(sql)
             grades = "%s 同学 %s 课程的成绩为 " % (student_id, course_id) + str(c.fetchone()[0])
             conn.close()
-
+            flag=2
+    
 
         self.send_response(200)
         self.send_header("Content-type", "text/html")
@@ -77,8 +78,8 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(b"<html><body>OK</body></html>")
         elif flag==1:
             self.wfile.write(b"<html><head><meta charset='utf-8'></head><body>Insert successfully!</body></html>")
-        else:   
-            self.wfile.write(b"<html><head><meta charset='utf-8'></head><body>%s</body></html>"%(grades))
+        else: 
+            self.wfile.write(bytes(str("<html><head><meta charset='utf-8'></head><body>%s</body></html>"%(grades)),'utf-8'))
 
 class MyHTTPServer(HTTPServer):
     def __init__(self, host, port):

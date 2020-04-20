@@ -44,11 +44,11 @@ int main()
 >code/virtualtry.cpp
 1. 使用VirtualAlloc分配一段可读可写的内存
 * 参考[Memory Protection Constants](https://docs.microsoft.com/zh-cn/windows/win32/memory/memory-protection-constants)  
-结果如下图所示：
+结果如下图所示：  
 ![](images/virtualalloc.png)
-2. 用VirtualProtect修改内存为只读
+2. 用VirtualProtect修改内存为只读  
 ![](images/readonly.png)
-3. VirtualFree该段内存,再对这段内存进行读写，得到结果：异常退出,结果如下图所示
+3. VirtualFree该段内存,再对这段内存进行读写，得到结果：异常退出,结果如下图所示  
 ![](images/virtualfree.png)  
 ## 实验总结
 经过此次实验明白：内存的有效性和访问属性，都是以4Kb为单位的，访问属性在分配内存时可以设置。

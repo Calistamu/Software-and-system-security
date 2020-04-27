@@ -39,6 +39,9 @@
 1. 首先应该将虚拟地址转化为物理地址，转换例子如下图：  
 * 虚拟地址转换为物理地址有!vtop和!pte两种方式，但是!vtop有时候不好用，具体什么时候还没能总结出来。
 ![](images/pte.png)
+* 后三位表示页内偏移，是由32位线性地址决定的。
+![](images/32address0.png)
+![](images/32address.png)
 2. 通过[!d*](https://docs.microsoft.com/zh-cn/windows-hardware/drivers/debugger/-db---dc---dd---dp---dq---du---dw)命令通过物理地址访问内存。具体区别如下图：  
 ![](images/!d.png)
 * 2.1操作融合在2.2实验中
@@ -46,6 +49,17 @@
 得到的地址都是虚拟地址，需要通过物理地址访问内存，需要先将虚拟地址转化为物理地址，具体实验操作及结果如下图所示：  
 ![](images/xp-result.png)  
 结论：通过虚拟地址和对应的物理地址访问内存，得到的结果是一样的。
+## 实验拓展
+### windbg下看xp-sp3系统非分页内存
+* x nt!MmNonPaged*列出了可能和非分页内存池相关的全局变量。
+* nt!MmNonPagedPoolEnd0:保存基本NonPagedd内存池的结束地址
+* nt!MmNonPagedSystemStart:保存基本NonPagedd内存池的开始地址
+![](images/add1.png)  
+![](images/add2.jpg)  
+具体分析：[windbg下看系统非分页内存](https://blog.csdn.net/lixiangminghate/article/details/54667694)
+### 计算查看PTE内容的两种方式
+![](images/seepte.png)  
+学到这里，去学习了[x86的控制寄存器CR0,CR1,CR2,CR3](https://blog.csdn.net/wyt4455/article/details/8691500)。收获：CR3是页目录基址寄存器，保存页目录表的物理地址，页目录表总是放在以4K字节为单位的存储器边界上，因此，它的地址的低12位总为0，不起作用，即使写上内容，也不会被理会。
 ## 实验问题
 1. 在guest串口设置后启动时出现如下图报错  
 ![](images/wrong1.png)  
@@ -54,6 +68,13 @@
 ![](images/wrong2.png)
 解决：一直以为是串口配置错误，还研究了很久想找到boot.ini，最后在waiting reconnect的时候下断点解决。
 3. 一开始使用的是win7系统，得到四级页表，找到PTE对应的pfn发现pfn是17de3fx1000，超出了八位地址，因此重新安装系统换为了xp-sp3（32位）
+![](images/wrong3.png)
+* 对于四级页表，x64 虚拟地址共 64 位，高 16 位为符号扩展，要么全 0，要么全 1。Windows 中，全 1 表示内核地址，全 0 表示用户态地址。低 48 位划分：    
+
+| 47-39(9 位) | 38-30(9 位) | 29-21(9 位) | 20-12(9 位) | 11-0(12 位) |  
+| ----- | ----- | ----- | ----- | ----- |
+|PML4E 索引(PXE)|PDPTE 索引(PPE)|PDE(页目录条目) 索引|PTE(页表条目) 索引|页内偏移|
+
 4. win7虽然没有调试成功，但是这里附上内核调试的配置方式
 * 1） Guest端：虚拟机串口设置如下图  
 ![](images/serialports.png)
@@ -99,4 +120,5 @@
 [!pte](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/-pte)  
 [converting-virtual-addresses-to-physical-addresses](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/converting-virtual-addresses-to-physical-addresses)  
 [Windows internal: Memory 2](https://ryan311.github.io/2014/03/22/windows-internal-memory-2/)  
-[虚拟地址空间](https://docs.microsoft.com/zh-cn/windows-hardware/drivers/gettingstarted/virtual-address-spaces)
+[虚拟地址空间](https://docs.microsoft.com/zh-cn/windows-hardware/drivers/gettingstarted/virtual-address-spaces)  
+[Windows 内核调试-win7](https://zhuanlan.zhihu.com/p/47771088)

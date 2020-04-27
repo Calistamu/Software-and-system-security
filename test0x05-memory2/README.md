@@ -24,7 +24,9 @@
 物理机(Host):已安装windbg  
 虚拟机(Guest):使用xp-sp3-32位系统
 #### 2.0 实验准备：配置内核调试
-1. Guest:下载安装好xp-sp3,打开'我的电脑'，地址栏输入，找到boot.ini。  
+1. virtualbox中设置：  
+![](images/serialport0.png)
+2. Guest:下载安装好xp-sp3,打开'我的电脑'，地址栏输入，找到boot.ini。  
 ![](images/find-bootini.png)
 2. Guest:boot.ini中添加内容并保存：```multi(0)disk(0)rdisk(0)partition(1)\WINDOWS="Microsoft Windows XP Professional" /noexecute=optin /fastdetect /debug /debugport=com1 /baudrate=115200```  
 ![](images/xp-setting1.png)  
@@ -33,6 +35,7 @@
 4. Guest:重启虚拟机，选择'DebugEntry'模式开启
 5. Host:进入windbg.exe所在文件夹，以下命令启动windbg  
 ```windbg.exe -k com:port=\\.\pipe\com_1,baud=115200,pipe``` 
+* 提前添加windbg符号下载地址 
 6. 下断点，看到如下页面，说明配置成功。  
 ![](images/xp-ok.png)
 #### 2.1 Windbg如何在内核调试情况下通过物理地址访问内存

@@ -22,11 +22,42 @@
 ### 2. 配置一个Windbg双机内核调试环境
 #### 实验环境
 物理机(Host):已安装windbg  
-虚拟机(Guest):使用win7-64位系统
+虚拟机(Guest):使用xp-sp3-32位系统
 #### 2.0 实验准备：配置内核调试
-1. Guest端：虚拟机串口设置如下图  
+1. Guest:下载安装好xp-sp3,打开'我的电脑'，地址栏输入，找到boot.ini。  
+![](images/find-bootini.png)
+2. Guest:boot.ini中添加内容并保存：```multi(0)disk(0)rdisk(0)partition(1)\WINDOWS="Microsoft Windows XP Professional" /noexecute=optin /fastdetect /debug /debugport=com1 /baudrate=115200```  
+![](images/xp-setting1.png)  
+3. Guest:配置开启启动项
+![](images/xp-setting2.png)
+4. Guest:重启虚拟机，选择'DebugEntry'模式开启
+5. Host:进入windbg.exe所在文件夹，以下命令启动windbg  
+```windbg.exe -k com:port=\\.\pipe\com_1,baud=115200,pipe``` 
+6. 下断点，看到如下页面，说明配置成功。  
+![](images/xp-ok.png)
+#### 2.1 Windbg如何在内核调试情况下通过物理地址访问内存
+1. 首先应该将虚拟地址转化为物理地址，转换例子如下图：  
+* 虚拟地址转换为物理地址有!vtop和!pte两种方式，但是!vtop有时候不好用，具体什么时候还没能总结出来。
+![](images/pte.png)
+2. 通过[!d*](https://docs.microsoft.com/zh-cn/windows-hardware/drivers/debugger/-db---dc---dd---dp---dq---du---dw)命令通过物理地址访问内存。具体区别如下图：  
+![](images/!d.png)
+* 2.1操作融合在2.2实验中
+#### 2.2 查看进程的虚拟内存分页表，在分页表中找到物理内存和虚拟内存的对应关系然后通过Windbg的物理内存查看方式和虚拟内存的查看方式，看同一块物理内存中的数据情况。
+得到的地址都是虚拟地址，需要通过物理地址访问内存，需要先将虚拟地址转化为物理地址，具体实验操作及结果如下图所示：  
+![](images/xp-result.png)  
+结论：通过虚拟地址和对应的物理地址访问内存，得到的结果是一样的。
+## 实验问题
+1. 在guest串口设置后启动时出现如下图报错  
+![](images/wrong1.png)  
+解决：Pipe名写错了，改对即可。
+2. Host打开windbg的时候一直reconnect
+![](images/wrong2.png)
+解决：一直以为是串口配置错误，还研究了很久想找到boot.ini，最后在waiting reconnect的时候下断点解决。
+3. 一开始使用的是win7系统，得到四级页表，找到PTE对应的pfn发现pfn是17de3fx1000，超出了八位地址，因此重新安装系统换为了xp-sp3（32位）
+4. win7虽然没有调试成功，但是这里附上内核调试的配置方式
+* 1） Guest端：虚拟机串口设置如下图  
 ![](images/serialports.png)
-2. Guest端：启动虚拟机，进入Window内部进行配置。以管理员身份启动CMD,输入以下命令。
+* 2) Guest端：启动虚拟机，进入Window内部进行配置。以管理员身份启动CMD,输入以下命令。
 * DebugEntry的方式启动win7
 ```
     bcdedit /dbgsettings serial baudrate:115200 debugport:1
@@ -36,10 +67,9 @@
 ```
 运行结果如下图：  
 ![](images/cmd.png)
-
-3. Host:配置windbg符号下载地址  
+* 3) Host:配置windbg符号下载地址  
 ![](images/symbols-path.png)
-4. Host进入windbg.exe所在文件夹，以下命令启动windbg  
+* 4) Host进入windbg.exe所在文件夹，以下命令启动windbg  
 ```windbg.exe -k com:port=\\.\pipe\com_1,baud=115200,pipe```  
 在显示'Waiting ro reconnect......'之后下断点，成功连接.而且此时win7系统已经无法动了.    
 ![](images/windbg-ok.png)   
@@ -49,26 +79,15 @@
 ![](images/cmd.jpg)  
 列出进程cmd.exe的详细信息，由于只有一个线程，查看该线程的信息。
 ![](images/view-process.png)
-#### 2.1 Windbg如何在内核调试情况下通过物理地址访问内存
-1. 使用dd命令来查看虚拟内存中的内容，紧接着之前的操作，随意选两个地址来查看内容.由下图可以看到cmd.exe的虚拟地址'fffffa80`04949060',以及dirbase:114697000(这就是页帧数)
-* 全是问号是因为确实没有内容
-![](images/seecontent.png)
-2. 还可以指定范围参数Ln，来示地址的前n个字节  
-![](images/contentn.png)
-3. 但是以上实验只是虚拟地址，要通过物理地址访问，首先应该将虚拟地址转化为物理地址。
-#### 2.2 查看进程的虚拟内存分页表，在分页表中找到物理内存和虚拟内存的对应关系然后通过Windbg的物理内存查看方式和虚拟内存的查看方式，看同一块物理内存中的数据情况。
-1. 
-## 实验问题
-1. 在guest串口设置后启动时出现如下图报错  
-![](images/wrong1.png)  
-解决：Pipe名写错了，改对即可。
-2. Host打开windbg的时候一直reconnect
-![](images/wrong2.png)
-解决：一直以为是串口配置错误，还研究了很久想找到boot.ini，最后在waiting reconnect的时候下断点解决。
 ## 实验总结
 1. 内核模式与用户模式区别：
-内核模式没有用户模式的那么多限制，内核模式下运行的代码可以访问系统空间和当前用户模式进程的虚拟地址空间。使用哪种模式根据要调试的驱动类型进行选择：“如果您的目标是调试驱动程序，请确定该驱动程序是内核模式驱动程序还是用户模式驱动程序。Windows驱动程序模型(WDM)驱动程序和内核模式驱动程序框架(KMDF)都是内核模式驱动程序。顾名思义，用户模式驱动程序框架(UMDF)驱动程序是用户模式驱动程序。”因此，之前课程进行api钩取的时候，调试hookapi.exe我们使用的是用户模式，这一次进行内核模式的学习。  
-2. 
+内核模式没有用户模式的那么多限制，用户模式下运行的代码可以访问用户空间，但不能访问系统空间。 此限制可防止用户模式代码读取或更改受保护的操作系统数据结构。 内核模式下运行的代码既可以访问用户空间，也可以访问系统空间。内核模式下运行的代码可以访问系统空间和当前用户模式进程的虚拟地址空间。
+2. 如何决定使用内核模式还是用户模式：根据要调试的驱动类型进行选择。———“如果您的目标是调试驱动程序，请确定该驱动程序是内核模式驱动程序还是用户模式驱动程序。Windows驱动程序模型(WDM)驱动程序和内核模式驱动程序框架(KMDF)都是内核模式驱动程序。顾名思义，用户模式驱动程序框架(UMDF)驱动程序是用户模式驱动程序。”因此，之前课程进行api钩取的时候，调试hookapi.exe我们使用的是用户模式，这一次进行内核模式的学习。  
+3. [!d*](https://docs.microsoft.com/zh-cn/windows-hardware/drivers/debugger/-db---dc---dd---dp---dq---du---dw)命令通过物理地址访问内存。[d*](https://docs.microsoft.com/zh-cn/windows-hardware/drivers/debugger/)通过虚拟地址访问内存
+4. 加深理解虚拟地址。虚拟地址访问内存有以下优势：
+* 程序可以使用一系列连续的虚拟地址来访问物理内存中不连续的大内存缓冲区。
+* 程序可以使用一系列虚拟地址来访问大于可用物理内存的内存缓冲区。 当物理内存的供应量变小时，内存管理器会将物理内存页（通常大小为 4 KB）保存到磁盘文件。 数据或代码页会根据需要在物理内存与磁盘之间移动。
+* 不同进程使用的虚拟地址彼此隔离。 一个进程中的代码无法更改正在由另一进程或操作系统使用的物理内存。
 ## 参考文献
 [VirtualAlloc function](https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualalloc)   
 [!db、!dc、!dd、!dp、!dq、!du、!dw](https://docs.microsoft.com/zh-cn/windows-hardware/drivers/debugger/-db---dc---dd---dp---dq---du---dw)  
@@ -77,5 +96,7 @@
 [Setting Up Kernel-Mode Debugging of a Virtual Machine Manually using a Virtual COM Port](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/attaching-to-a-virtual-machine--kernel-mode-)  
 [d、 da、 db、 dc、 dd、 dD、 df、 dp、 dq、 du，dw （显示内存）](https://docs.microsoft.com/zh-cn/windows-hardware/drivers/debugger/d--da--db--dc--dd--dd--df--dp--dq--du--dw--dw--dyb--dyd--display-memor)  
 [debug-universal-drivers--kernel-mode-](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/debug-universal-drivers--kernel-mode-)  
-[pte](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/-pte)  
-[converting-virtual-addresses-to-physical-addresses](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/converting-virtual-addresses-to-physical-addresses)
+[!pte](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/-pte)  
+[converting-virtual-addresses-to-physical-addresses](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/converting-virtual-addresses-to-physical-addresses)  
+[Windows internal: Memory 2](https://ryan311.github.io/2014/03/22/windows-internal-memory-2/)  
+[虚拟地址空间](https://docs.microsoft.com/zh-cn/windows-hardware/drivers/gettingstarted/virtual-address-spaces)

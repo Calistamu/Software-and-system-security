@@ -7,7 +7,17 @@
 * URLDownloadToFileA函数在 Urlmon.dll 这个dll中，这个dll不是默认加载的，所以可能还需要调用LoadLibrary函数
 ## 实验步骤
 ### 实验一
-#### shellcode示例1
+#### shellcode示例1  
+功能：Kill All Processes   
+[shellcode来源](https://www.exploit-db.com/shellcodes/46492)
+##### 实验环境
+虚拟机：kali 64位  
+物理机：win10
+##### 实验步骤
+1. scp拷贝shell-test.c文件到kali中  
+2. 将shell-test.c编译链接成可执行文件```gcc -fno-stack-protector -z execstack shell-test.c -o shell-test```
+3. 执行：```./shell-test```
+##### 实验效果
 
 #### shellcode示例2
 

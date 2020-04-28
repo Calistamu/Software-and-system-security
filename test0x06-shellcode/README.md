@@ -64,7 +64,7 @@ ld.exe -o winexec.exe exec.obj
 2. xp-sp3中执行winexec.exe
 ##### 实验效果
 ![](video/xp32-shellcode.gif)
-##### shellcode解读-win-64位
+##### shellcode解读
 1. 加载PEB找kernel32.dll基地址  
 ![](images/3-1.png)  
 2. 找kernel32.dll导出表
@@ -79,23 +79,32 @@ ld.exe -o winexec.exe exec.obj
 ![](images/3-6.png)   
 >完整汇编及C代码存于code/shellcode-3.txt
 
-#### shellcode示例4
-功能： 
-[shellcode-4来源]()
+#### shellcode示例4-win7-64位
+功能：WinExec() with ExitThread()
+[shellcode-4来源](https://www.exploit-db.com/shellcodes/13521)
 ##### 实验环境
-
+虚拟机：win7 professional 64位  
+物理机：win10
 ##### 实验步骤
-
+1.使用以下命令，在vs命令符中进行编译链接  
+```
+ml /c /coff /Cp wexec2.asm  
+link /subsystem:windows /section:.text,w wexec2.obj
+```
+2. 得到wexec2.exe拖入win7系统中运行
 ##### 实验效果
-
+效果不是很明显，但是看到鼠标旁边的小圈圈转动了，然后又不转了，说明显示运行了程序，然后又结束了线程。
+![](video/win7-64-shellcode.gif)
 ##### shellcode解读
-
+这个示例是使用一个个小函数来实现功能的，从函数的名称能大概理解功能。  
+![](images/4-1.png)
 >完整汇编及C代码存于code/shellcode-4.txt
 ### 实验二
 #### 实验要求
 修改[示例shellcode](https://www.exploit-db.com/shellcodes/48116),使其下载运行某个程序
 [shellcode来源](https://www.exploit-db.com/shellcodes/24318)
 #### 实验步骤
+
 #### 实验效果
 
 ## 实验问题

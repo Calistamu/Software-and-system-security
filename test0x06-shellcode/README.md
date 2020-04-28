@@ -9,7 +9,7 @@
 ### 实验一
 #### shellcode示例1-linux-64位  
 功能：Kill All Processes   
-[shellcode来源](https://www.exploit-db.com/shellcodes/46492)
+[shellcode-1来源](https://www.exploit-db.com/shellcodes/46492)
 ##### 实验环境
 虚拟机：kali 64位  
 物理机：win10
@@ -39,12 +39,37 @@ ret();
 }
 ```
 >完整汇编及C代码存于code/shellcode-1.txt
-#### shellcode示例2
+#### shellcode示例2-linux-32位
+功能：  
+[shellcode-2来源]()
+##### 实验环境
+##### 实验步骤
+##### 实验效果
+##### shellcode解读
 >完整汇编及C代码存于code/shellcode-2.txt
-#### shellcode示例3
+#### shellcode示例3-win-32位
+功能：  
+[shellcode-3来源]()
+##### 实验环境
+##### 实验步骤
+##### 实验效果
+##### shellcode解读-win-64位
 >完整汇编及C代码存于code/shellcode-3.txt
 #### shellcode示例4
+功能：  
+[shellcode-4来源]()
+##### 实验环境
+##### 实验步骤
+##### 实验效果
+##### shellcode解读
 >完整汇编及C代码存于code/shellcode-4.txt
+
+### 实验二
+#### 实验要求
+修改[示例shellcode](https://www.exploit-db.com/shellcodes/48116),使其下载运行某个程序
+#### 实验步骤
+#### 实验效果
+
 ## 实验问题
 
 ## 实验总结
@@ -52,7 +77,7 @@ ret();
 DOS/Windows 下的汇编语言代码都是 Intel 风格的，而 Linux 和 Unix 系统中更多采用的是 AT&T 格式。  
 2. shellcode示例C代码中多次使用到了函数指针。函数指针值得学习：  
 [深入理解C语言函数指针](https://www.cnblogs.com/windlaughing/archive/2013/04/10/3012012.html)和[深入浅出——理解c/c++函数指针](https://zhuanlan.zhihu.com/p/37306637)  
-学习总结： 
+函数指针学习总结： 
 * 函数指针：将函数的首地址存储在某个函数指针变量中，被存储地址的函数指针称为函数指针常量，被赋予函数指针的称为函数指针变量，从而使两个不同函数名的函数拥有相同的函数调用效果。通俗地理解，就是将一个函数的首地址通过指针进行传参来调用。
 * 函数指针变量跟普通的指针一样在32位系统下大小都为4。但是函数指针常量的大小为1.
 * 函数指针变量和函数指针常量存储在内存的不同位置。

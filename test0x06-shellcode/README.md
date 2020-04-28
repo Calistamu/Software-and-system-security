@@ -1,7 +1,7 @@
 # shellcode
 
 ## 实验要求
-- [] 1、详细阅读 www.exploit-db.com 中的shellcode。建议找不同功能的，不同平台的 3-4个shellcode解读。
+- [x] 1、详细阅读 www.exploit-db.com 中的shellcode。建议找不同功能的，不同平台的 3-4个shellcode解读。
 - [] 2、修改示例代码的shellcode，将其功能改为下载执行。也就是从网络中下载一个程序，然后运行下载的这个程序。提示：Windows系统中最简单的下载一个文件的API是 UrlDownlaodToFileA
 * 其中第二个作业，原参考代码只调用了一个API函数，作业要求调用更多的API函数了，其中涉及到的参数也更复杂，但是原理是相通的。
 * URLDownloadToFileA函数在 Urlmon.dll 这个dll中，这个dll不是默认加载的，所以可能还需要调用LoadLibrary函数
@@ -40,12 +40,26 @@ ret();
 ```
 >完整汇编及C代码存于code/shellcode-1.txt
 #### shellcode示例2-linux-32位
-功能：  
-[shellcode-2来源]()
+功能：deletes file declared in "fname"  
+[shellcode-2来源](https://www.exploit-db.com/shellcodes/46870)
 ##### 实验环境
+虚拟机：ubuntu-16.10-server-32位  
+物理机：win10
 ##### 实验步骤
+1. 编译链接，有两种方式：  
+```
+# 方式一，使用汇编语言
+nasm -felf64 delete.nasm -o delete.o   
+ld delete.o -o delete
+# 方式二，使用.c文件
+gcc -fno-stack-protector -z execstack delete.c
+```
+2. 展示中使用的是第二种方式，执行```./a.out```。
 ##### 实验效果
+看到在汇编代码fname中声明的test.txt被删除了。  
+![](video/ubuntu-32-shellcode.gif)
 ##### shellcode解读
+![](images/2-1.png)
 >完整汇编及C代码存于code/shellcode-2.txt
 #### shellcode示例3-win-32位
 功能：打开cmd.exe   
@@ -86,7 +100,7 @@ ld.exe -o winexec.exe exec.obj
 虚拟机：win7 professional 64位  
 物理机：win10
 ##### 实验步骤
-1.使用以下命令，在vs命令符中进行编译链接  
+1. 使用以下命令，在vs命令符中进行编译链接  
 ```
 ml /c /coff /Cp wexec2.asm  
 link /subsystem:windows /section:.text,w wexec2.obj
@@ -101,14 +115,15 @@ link /subsystem:windows /section:.text,w wexec2.obj
 >完整汇编及C代码存于code/shellcode-4.txt
 ### 实验二
 #### 实验要求
-修改[示例shellcode](https://www.exploit-db.com/shellcodes/48116),使其下载运行某个程序
+修改[示例shellcode](https://www.exploit-db.com/shellcodes/48116),使其下载并运行某个程序  
 [shellcode来源](https://www.exploit-db.com/shellcodes/24318)
 #### 实验步骤
 
 #### 实验效果
 
 ## 实验问题
-
+1. linux 32位的系统搞了好久，怪不得老师说要认真学习使用vim与vi,现在64位最新使用的系统已经十分人性化，而以前的系统真是十分严格的linux呢！而且host-only的dhcp也是要自己搞，还好之前ns课程有踩坑。
+2. 对于汇编语言和C语言的编译链接方式不一样，windows 32位系统shellcode的应用也搞了好久，因为使用之前的```cl /c /MT a.c```和```link /SUBSYSTEM:CONSOLE,5.01 a.obj```依然无法在xp-sp3中使用，只能采用汇编语言编译链接的方式。
 ## 实验总结
 1. 经过此次实验作业，加深了对汇编语言的理解，首先是AT&T与Intel风格的汇编语言:  
 DOS/Windows 下的汇编语言代码都是 Intel 风格的，而 Linux 和 Unix 系统中更多采用的是 AT&T 格式。  

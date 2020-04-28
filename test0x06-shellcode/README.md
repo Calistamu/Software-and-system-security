@@ -48,25 +48,53 @@ ret();
 ##### shellcode解读
 >完整汇编及C代码存于code/shellcode-2.txt
 #### shellcode示例3-win-32位
-功能：  
-[shellcode-3来源]()
+功能：打开cmd.exe   
+[shellcode-3来源](https://www.exploit-db.com/shellcodes/39900)
 ##### 实验环境
+虚拟机：xp-sp3-32位  
+物理机：win10
 ##### 实验步骤
+1. 将汇编语言保存为winexec.asm,然后使用下列命令编译链接：  
+```
+# linux系统中使用
+nasm -f win32 winexec.asm -o exec.obj
+# vs命令行中使用
+ld.exe -o winexec.exe exec.obj
+```
+2. xp-sp3中执行winexec.exe
 ##### 实验效果
+![](video/xp32-shellcode.gif)
 ##### shellcode解读-win-64位
+1. 加载PEB找kernel32.dll基地址  
+![](images/3-1.png)  
+2. 找kernel32.dll导出表
+![](images/3-2.png)  
+3. 在导出表中找到GetProcAddress()函数的名字  
+![](images/3-3.png)  
+4. 找到GetProcAddress()函数的地址  
+![](images/3-4.png) 
+5. 保存GetProcAddress()的地址和kernel32.dll的地址，以及找到Winexe()的地址  
+![](images/3-5.png)  
+6. 结束进程  
+![](images/3-6.png)   
 >完整汇编及C代码存于code/shellcode-3.txt
+
 #### shellcode示例4
-功能：  
+功能： 
 [shellcode-4来源]()
 ##### 实验环境
-##### 实验步骤
-##### 实验效果
-##### shellcode解读
->完整汇编及C代码存于code/shellcode-4.txt
 
+##### 实验步骤
+
+##### 实验效果
+
+##### shellcode解读
+
+>完整汇编及C代码存于code/shellcode-4.txt
 ### 实验二
 #### 实验要求
 修改[示例shellcode](https://www.exploit-db.com/shellcodes/48116),使其下载运行某个程序
+[shellcode来源](https://www.exploit-db.com/shellcodes/24318)
 #### 实验步骤
 #### 实验效果
 
@@ -90,4 +118,5 @@ DOS/Windows 下的汇编语言代码都是 Intel 风格的，而 Linux 和 Unix 
 [PEB structure](https://docs.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb)  
 [Process Environment Block](https://en.wikipedia.org/wiki/Process_Environment_Block)  
 [汇编语言--Linux 汇编语言开发指南](https://zhuanlan.zhihu.com/p/54853591)  
-[Raw Linux Threads via System Calls](https://nullprogram.com/blog/2015/05/15/)
+[Raw Linux Threads via System Calls](https://nullprogram.com/blog/2015/05/15/)  
+[URLDownloadToFile function](https://docs.microsoft.com/en-us/previous-versions/windows/internet-explorer/ie-developer/platform-apis/ms775123(v=vs.85)?redirectedfrom=MSDN)

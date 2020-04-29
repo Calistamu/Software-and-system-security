@@ -121,6 +121,15 @@ link /subsystem:windows /section:.text,w wexec2.obj
 #### 实验要求
 修改[示例shellcode](https://www.exploit-db.com/shellcodes/48116),使其下载并运行某个程序  
 [shellcode来源](https://www.exploit-db.com/shellcodes/24318)
+#### 实验原理
+shellcode要实现的步骤：
+1. 获取kernel32.dll基地址
+2. 定位GetProcAddress函数地址
+3. 使用GetProcAddress确定LoadLibrary函数地址
+4. 使用LoadLibrary加载DLL文件
+5. 使用GetProcAddress查找某个函数的地址（例如MessageBox）
+6. 指定函数参数
+7. 调用函数
 #### 实验步骤
 1. 
 #### 实验效果
@@ -141,7 +150,7 @@ DOS/Windows 下的汇编语言代码都是 Intel 风格的，而 Linux 和 Unix 
 * 函数指针变量和函数指针常量存储在内存的不同位置。
 * 为负值的函数指针变量（全局）的值为0
 * 函数指针同样要求返回值匹配和参数匹配
-3. shellcode  
+3. shellcode编写总结  
 1）不能使用字符串的直接偏移，必须把字符串存储在栈上。  
 2）不能确定函数的地址（如printf），把DLL文件加载到内存，先找所需要的函数，然后通过Windows API为我们提供的两个函数：LoadLibrary和GetProcAddress查找目标函数的地址。  
 3）必须避免一些特定字符。原因：如NULL字节，因为在C/C++代码中，空字节被认为是字符串的结束符。以及如果使用strcpy(),strcpy函数便会在空字节处终止拷贝操作，引发栈上的shellcode不完整  
@@ -152,10 +161,24 @@ DOS/Windows 下的汇编语言代码都是 Intel 风格的，而 Linux 和 Unix 
 2）DLL（由于ASLR机制）可以加载到不同的内存位置，因此我们不能在shellcode中使用固定的内存地址。不过，我们可以使用PEB这个结构，位于固定的内存位置，从而查找DLL加载到内存中的地址。
 3）Reserved字段没有相应的描述,而其他一些字段具有相应的文档描述。从保留字段推断出可访问字段的偏移地址是容易的。（比如BYTE表示1个字节。PVOID表示1个指针（或1个内存地址），在0×86系统上（32位系统）占用4个字节等。）
 4）实验要用到的就是PEB中Ldr的字段，根据PEB结构可以容易推出该字段在0xC偏移处。
-5. windbg上使用'!ped'可见PEB起始地址以及Ldr地址。
+5. 如何查找kernel32.dll内存地址？  
+1）windbg上使用'!ped'可见PEB起始地址以及Ldr地址。
+![](images/peb.png)  
+ldr的定义：  
 ![](images/ldr.png)  
-由ldr地址找到PEB_LDR_DATA。在偏移20字节（0x14,20字节=160位，8位一个地址，所以1字节对应1地址，20/16=1······4）后访问 InMemoryOrderModuleList字段，该字段可以指出已加载DLL的相关信息，通过不断遍历找到目标dll对应的LDR_DATA_TABLE_ENTRY结构体，访问LDR_DATA_TABLE_ENTRY结构体来获取已加载目标DLL的地址信息（DllBase字段）。
+2）由ldr地址（0xC）找到PEB_LDR_DATA。在偏移20字节（0x14,20字节=160位，8位一个地址，所以1字节对应1地址，20/16=1······4）后访问 InMemoryOrderModuleList字段，该字段可以指出已加载DLL的相关信息。  
+3）通过不断遍历找到目标dll对应的LDR_DATA_TABLE_ENTRY结构体。  
+4）访问LDR_DATA_TABLE_ENTRY结构体来获取已加载目标DLL的地址信息（DllBase字段）。
 ![](images/know-dll.png) 
+6. shellcode分类：  
+1）下载执行  
+调用URLDownloadToFile函数下载恶意文件到本地，并且使用Winexec执行  
+2）捆绑  
+通过GetFileSize获取文件句柄，获取释放路径（GetTempPathA），设置好文件指针（SetFilePoint），使用VirtualAlloc在内存中申请一块内存，再将数据读取（ReadFile）写入到本地文件（CreateFIle WriteFile），最后在对该文件执行。  
+3）反弹shell  
+反弹shell属于无文件攻击，使用socket远程获得对方的cmd.exe。优点是不容易留下日志，适合渗透测试中使用，缺点也很明显，维持连接的稳定性较差。  
+在Windows下实现反弹shell，比Linux多了一个步骤，启动或者初始化winsock库，之后创建cmd.exe进程然后TCP连接端口/打开监听方法都是相近的。  
+需要注意的使用C编程可以使用Socket结合双管道进行通信，但是用汇编管道编写比较麻烦。不建议使用管道来进行通信。解决方案是使用WSASocket代替Socket，这个函数支持IO重叠。
 ## 参考文献
 [www.exploit-db.com-shellcode](https://www.exploit-db.com/shellcodes)  
 [!peb](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/-peb)  
@@ -170,4 +193,4 @@ DOS/Windows 下的汇编语言代码都是 Intel 风格的，而 Linux 和 Unix 
 [Shellcode](https://en.wikipedia.org/wiki/Shellcode)  
 [Windows平台shellcode开发入门（一）](https://www.freebuf.com/articles/system/93983.html)  
 [Windows平台shellcode开发入门（二）](https://www.freebuf.com/articles/system/94774.html)  
-[Windows平台shellcode开发入门（三](https://www.freebuf.com/articles/system/97215.html)
+[Windows平台shellcode开发入门（三）](https://www.freebuf.com/articles/system/97215.html)

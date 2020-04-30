@@ -180,7 +180,17 @@ int main(void)
 解决：自己搭静态服务器。
 4. 应用shellcode时，.c测试文件内存报错，报错如下图：  
 ![](images/wrong2.png)  
-解决：使用virtualprotect()
+解决：使用virtualprotect()  
+5. 下载一个文件夹，删除报错，报错信息如下图：  
+![](images/delete-wrong1.png)
+解决：根据[解决来源](https://www.wintips.org/fix-you-need-permission-to-perform-this-action-cannot-delete-folder-file/)，输入以下命令:  
+```
+takeown /F "C:\Folder1" /r /d y  
+icacls "C:\Folder1" /grant Administrators:F /t  
+rd "C:\Folder1" /S /Q    
+```
+确实删除了其他文件夹，还剩下一个文件夹怎么都删除不了  
+![](images/delete-wrong2.png)
 ## 实验总结
 1. 经过此次实验作业，加深了对汇编语言的理解和感受，学好汇编太重要了。首先是AT&T与Intel风格的汇编语言区别:  
 DOS/Windows 下的汇编语言代码都是 Intel 风格的，而 Linux 和 Unix 系统中更多采用的是 AT&T 格式。  

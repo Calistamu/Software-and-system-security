@@ -122,14 +122,19 @@ link /subsystem:windows /section:.text,w wexec2.obj
 修改[示例shellcode](https://www.exploit-db.com/shellcodes/48116),使其下载并运行某个程序  
 [shellcode来源](https://www.exploit-db.com/shellcodes/24318)
 #### 实验原理
-shellcode要实现的步骤：
-1. 获取kernel32.dll基地址
-2. 定位GetProcAddress函数地址
-3. 使用GetProcAddress确定LoadLibrary函数地址
-4. 使用LoadLibrary加载DLL文件
-5. 使用GetProcAddress查找某个函数的地址（例如MessageBox）
-6. 指定函数参数
-7. 调用函数
+1. 提前编译链接好一个.exe，搭建web服务器提供.exe的下载。
+2. 编写shellcode
+* shellcode要实现的步骤：  
+1)获取kernel32.dll基地址  
+2)定位GetProcAddress函数地址  
+3)使用GetProcAddress确定LoadLibrary函数地址  
+4)使用LoadLibrary加载DLL文件  
+5)使用GetProcAddress查找某个函数的地址   
+6)指定函数参数  
+7)调用函数  
+3. shellcode转成十六进制字符串
+4. 使用C语言，函数指针的方式，执行shellcode转化成的十六进制字符串
+
 #### 实验步骤
 1. 使用cmd.exe进入shellcode.exe文件夹，输入```python -m http.server 5000```开启静态服务器提供exe下载。
 * 可以执行以下代码并试用体会URLDownloadToFile()和WinExec()功能。测试结果如图：  
@@ -217,4 +222,5 @@ ldr的定义：
 [Shellcode](https://en.wikipedia.org/wiki/Shellcode)  
 [Windows平台shellcode开发入门（一）](https://www.freebuf.com/articles/system/93983.html)  
 [Windows平台shellcode开发入门（二）](https://www.freebuf.com/articles/system/94774.html)  
-[Windows平台shellcode开发入门（三）](https://www.freebuf.com/articles/system/97215.html)
+[Windows平台shellcode开发入门（三）](https://www.freebuf.com/articles/system/97215.html)  
+[shellcode教程从新手到高手](https://wooyun.js.org/drops/shellcode%E6%95%99%E7%A8%8B%E4%BB%8E%E6%96%B0%E6%89%8B%E5%88%B0%E9%AB%98%E6%89%8B.html)

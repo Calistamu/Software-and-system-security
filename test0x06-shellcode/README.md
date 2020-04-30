@@ -190,7 +190,9 @@ icacls "C:\Folder1" /grant Administrators:F /t
 rd "C:\Folder1" /S /Q    
 ```
 确实删除了其他文件夹，还剩下一个文件夹怎么都删除不了  
-![](images/delete-wrong2.png)
+![](images/delete-wrong2.png)  
+解决：重启后删除成功。    
+分析：实验中使用了Release文件夹中的进程没有结束彻底。  
 ## 实验总结
 1. 经过此次实验作业，加深了对汇编语言的理解和感受，学好汇编太重要了。首先是AT&T与Intel风格的汇编语言区别:  
 DOS/Windows 下的汇编语言代码都是 Intel 风格的，而 Linux 和 Unix 系统中更多采用的是 AT&T 格式。  

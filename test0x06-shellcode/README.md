@@ -26,7 +26,8 @@
 * rax rbx rcx rdx：通用寄存器（注意 a, b, c, d）。rdi rsi：d 和 s 分别表示 “destination” 和 “source”，不过现在已经没有意义了。
 * 在 Linux 使用的 System V 二进制接口中：前 6 个参数通过寄存器传参。函数的返回值则通过 rax 寄存器返回。当函数调用发生时，整型变量/指针按照如下顺序通过寄存器传递：rdi, rsi, rdx, rcx（后来换成了r10）, r8, r9。每个系统调用都有一个整数标识符。
 * 在不同平台上，系统调用的编号可能不同。不过，在 Linux 中，这些标识符是永远不会变的。因此汇编代码中'push 0x3e'和'push	0x9'能够很明确地分别表示'sys kill'和'sig kill'。然后不断用rax、rdi、rsi来传递pid,依次pop出栈。
-* 最后使用'syscall'指令向系统内核发起系统调用请求。
+* 最后使用'syscall'指令向系统内核发起系统调用请求。  
+
 ![](images/shellcode1.png)
 C代码及分析如下：
 * 之后的C代码都大同小异，因此之后的示例没有给出C代码分析  
@@ -120,7 +121,6 @@ link /subsystem:windows /section:.text,w wexec2.obj
 ### 实验二
 #### 实验要求
 修改[示例shellcode](https://www.exploit-db.com/shellcodes/48116),使其下载并运行某个程序  
-[shellcode来源](https://www.exploit-db.com/shellcodes/24318)
 #### 实验原理
 1. 提前编译链接好一个.exe，搭建web服务器提供.exe的下载。
 2. 编写shellcode
@@ -237,4 +237,5 @@ ldr的定义：
 [Windows平台shellcode开发入门（二）](https://www.freebuf.com/articles/system/94774.html)  
 [Windows平台shellcode开发入门（三）](https://www.freebuf.com/articles/system/97215.html)  
 [shellcode教程从新手到高手](https://wooyun.js.org/drops/shellcode%E6%95%99%E7%A8%8B%E4%BB%8E%E6%96%B0%E6%89%8B%E5%88%B0%E9%AB%98%E6%89%8B.html)  
-[ShellcodeCompiler](https://github.com/NytroRST/ShellcodeCompiler)
+[ShellcodeCompiler](https://github.com/NytroRST/ShellcodeCompiler)  
+[一个很好的作业二示例，可供学习与测试](https://www.exploit-db.com/shellcodes/24318)

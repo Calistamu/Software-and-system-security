@@ -148,7 +148,54 @@ klee总共执行了4848113条指令，探索了7438条路径，生成了16个测
 再次编译链接后运行，发现报错已解决。  
 ![](images/2-4.png)
 5. tutorial 3:Solving a maze with KLEE
-6. tutorial 4:
+```
+# Update aptitude 
+sudo apt-get update
+# Install git 
+sudo apt-get install -y git-core
+# Download maze 
+git clone https://github.com/grese/klee-maze.git ~/maze
+
+
+# Build & Run Maze
+# Source is in maze.c.
+cd ~/maze
+# Build 
+gcc maze.c -o maze
+# Run manually 
+./maze 
+# Input a string of "moves" and press "enter"
+# Allowed moves: w (up), d (right), s (down), a (left)
+# Example solution: ssssddddwwaawwddddssssddwwww
+#Run w/solution: 
+cat solution.txt | ./maze
+```
+可以看到迷宫一步步的行走结果：  
+![](images/3-1.png)  
+```
+# Build & Run Maze w/Klee
+# The maze program using Klee symbolic execution and assertions. When klee evaluates the maze, it will discover the "actual solution", and any "hidden solutions" (which exist due to "bugs" in the maze). 
+# Source is in maze_klee.c
+cd ~/maze
+# Build LLVM Bytecode: 
+./scripts/build_bc.sh 
+(builds "maze_klee.bc" using "clang -emit-llvm") 
+# Ignore the "implicit declaration of function '__assert_fail'" warning.
+# Run Klee on Bytecode: 
+./scripts/run_klee.sh 
+(runs klee on "maze_klee.bc" using "--emit-all-errors")
+# Show solutions: 
+./scripts/show_solutions.sh 
+(gets klee test results from "ktest-tool", and prints maze solutions)
+```
+klee符号执行的结果,一共有四种可能：  
+![](images/3-2.png)
+遇见了新的报错类型，查看一下内容： 
+* assert: An assertion failed.
+
+![](images/3-3.png)
+6. tutorial 4:Keygenning with KLEE and Hex-Rays
+
 7. tutorial 5:
 8. tutorial 6:
 9. tutorial 7:
@@ -175,8 +222,11 @@ docker run hello-world
 4. 【tutorial-2】修改.c文件时，使用vi/vim报错，因为docker容器中vim无法使用  
 ![](images/wrong4.png)  
 解决：```sudo apt-get update && sudo apt-get install vim```
-## 实验结论
+## 实验总结
+1. klee error report:  
+![](images/error-report.png)
 ## 参考文献
-[klee-tutorials](https://klee.github.io/tutorials/)
-[Get Docker Engine - Enterprise for Ubuntu](https://docs.docker.com/ee/docker-ee/ubuntu/)
-[Using KLEE with Docker](https://klee.github.io/docker/)
+[klee-tutorials](https://klee.github.io/tutorials/)  
+[Get Docker Engine - Enterprise for Ubuntu](https://docs.docker.com/ee/docker-ee/ubuntu/)  
+[Using KLEE with Docker](https://klee.github.io/docker/)  
+[klee-maze](https://github.com/grese/klee-maze)

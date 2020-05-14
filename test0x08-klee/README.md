@@ -209,9 +209,83 @@ klee --optimize --libc=uclibc --posix-runtime main.ll --sym-arg 100
 ![](images/4-2.png)
 可以看到'data'中的值就是正确的password  
 7. tutorial 5:Keygenning With KLEE: A more in-depth guide to using KLEE to solve larger binaries.
+>tutorial-5所需代码存于：code/test.c 
 
-8. tutorial 6:
-9. tutorial 7:
+```
+clang -I ~/klee_src/include/ -emit-llvm -g -o test.ll -c test.c
+klee test.ll
+```
+运行结果如下图：  
+![](images/5-1.png)    
+查看测试用例：  
+![](images/5-2.png)  
+更改test.c  
+![](images/5-3.png)
+再次编译连接后运行，出现了assert报错。  
+![](images/5-4.png)  
+查看.err错误文件  
+![](images/5-5.png)  
+再查看响应出现错误的那个测试用例，由于我们一开始去掉了=10的情况，所以数值为10的测试用例出现了报错  
+![](images/5-6.png)  
+>code/magic.c
+
+编译链接运行后，测试用例的结果如下图，符合要求'-254'  
+![](images/5-7.png)
+>code/atoi.c
+
+运行结果如下图，出现了报错以后，去解决这个问题，运行时使用```klee --optimize --libc=uclibc --posix-runtime atoi.ll --sym-args 0 1 3```：
+* --optimize:这是为了消除死代码。在处理重要应用程序时使用这个标志实际上是一个好主意，因为它加快了速度;
+* --libc=uclibc and --posix-runtime:这些是前面提到的uclibc和POSIX运行时的选项;
+* --sym-args 0 1 3:这个标志告诉KLEE运行长度为3的最小0和最大1个参数的程序，并使这些参数具有符号性。
+
+![](images/5-8.png)
+出现了内存错误，atoi.c修改为如下：  
+```
+#include <stdlib.h>
+#include <assert.h>
+#include <klee/klee.h>
+
+int main(int argc, char* argv[]) {
+        int result = argc > 1 ? atoi(argv[1]) : 0;
+        if (result == 42)
+            klee_assert(0);
+        return result;
+    }
+```
+编译链接命令不变，使用此命令执行```klee --optimize --libc=uclibc --posix-runtime atoi2.ll --sym-args 0 1 3```,运行结果如下图，出现了报错。  
+![](images/5-9.png)  
+找到出错的文件，然后查看对应的测试用例，得到答案是'+42'  
+![](images/5-10.png) 
+* 之后的实验需要配合文中的软件因此就做到了这里
+8. tutorial 6:Testing Coreutils: In-depth description of how to use KLEE to test GNU Coreutils.
+
+9. tutorial 7:Using symbolic environment: Guide with examples on how to use the symbolic environment such as symbolic files and command-line arguments for the program under test. 
+* 熟悉命令行参数
+
+-symm-arg <N>为被测试程序提供了长度为N的命令行参数。它的变体-symg-args <MIN> <MAX> <N>提供了至少最小的参数和最多的最大符号参数，每个参数的最大长度为N.    
+>code/password.c 
+```
+$ clang -c -g -emit-llvm password.c
+# 使用-posix-runtime来启动符号环境
+$ klee -posix-runtime password.bc -sym-arg 5
+```
+运行结果如下图：  
+![](images/7-1.png)  
+-symm-files <NUM> <N>创建NUM符号文件，其中第一个文件名为' A '，第二个文件名为' B '，以此类推，每个文件的大小为N。它的兄弟选项- symm -stdin和- symm -stdout分别使标准输入和输出成为符号。  
+
+>code/password2.c
+```
+$ clang -c -g -emit-llvm password2.c
+# 使用-symm-stdin选项提供了一个符号标准输入.
+$ klee -posix-runtime password2.bc -sym-stdin 10
+```
+可以看搭配使用klee的密码是'46561952'.  
+![](images/7-2.png)   
+还可以读取一个包含符号内容的文件，以便KLEE执行密码检查成功的路径。-symm-files选项提供了几个名为“A”、“B”、“C”等文件。通过指定下面的选项-symm-files 1 10，要求KLEE提供一个大小为10字节的符号文件，该文件被KLEE命名为' A '。
+```
+klee -posix-runtime password2.bc A -sym-files 1 10
+```
+![](images/7-3.png) 
 ## 实验问题
 1. 安装docker-ce时指定版本出错  
 ![](images/wrong1.png)    

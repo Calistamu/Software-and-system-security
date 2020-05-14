@@ -209,6 +209,7 @@ klee --optimize --libc=uclibc --posix-runtime main.ll --sym-arg 100
 ![](images/4-2.png)
 可以看到'data'中的值就是正确的password  
 7. tutorial 5:Keygenning With KLEE: A more in-depth guide to using KLEE to solve larger binaries.
+* 把之前的tutorial内容复习了一遍，之后的内容针对反解序列化的软件进行
 >tutorial-5所需代码存于：code/test.c 
 
 ```
@@ -320,4 +321,5 @@ docker run hello-world
 [Get Docker Engine - Enterprise for Ubuntu](https://docs.docker.com/ee/docker-ee/ubuntu/)  
 [Using KLEE with Docker](https://klee.github.io/docker/)  
 [klee-maze-github](https://github.com/grese/klee-maze)  
+[Coreutils - GNU core utilities](https://www.gnu.org/software/coreutils/)  
 

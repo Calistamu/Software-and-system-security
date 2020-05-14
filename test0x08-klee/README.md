@@ -6,6 +6,10 @@
 ## 实验环境
 ubuntu 18.04 server
 ## 实验步骤
+* klee的安装有多种方式：  
+![](images/install-klee.png)  
+本次试验选用docker的方式。
+
 1.安装Docker Engine - Enterprise
 ```
 1.设置仓库
@@ -61,7 +65,9 @@ $ docker build -t klee/klee
 docker run --rm -ti --ulimit='stack=-1:-1' klee/klee
 ```
 klee版本信息如下图：  
-![](images/klee-version.png)  
+![](images/klee-version.png) 
+clang版本信息如下图：  
+![](images/clang-version.png) 
 ```
 # Persistent Containers
 docker run -ti --name=my_first_klee_container --ulimit='stack=-1:-1' klee/klee
@@ -97,7 +103,8 @@ docker rm my_first_klee_container
 ```
 删除docker image前后对比   
 ![](images/delete-image.png)  
-3. 
+3. First tutorial: Testing a small function.
+
 ## 实验问题
 1. 安装docker-ce时指定版本出错  
 ![](images/wrong1.png)    
@@ -115,8 +122,11 @@ su -s ${USER}
 # Verify that you can run docker commands without sudo.
 docker run hello-world
 ```
+3. 【tutorial-1】编译链接.c文件时出现报错  
+![](images/wrong3.png)  
+解决：进错了目录，应该是'klee/examples/get_sign/',然后再编译链接。
 ## 实验结论
 ## 参考文献
-[klee-tutorials](https://klee.github.io/tutorials/testing-function/)
+[klee-tutorials](https://klee.github.io/tutorials/)
 [Get Docker Engine - Enterprise for Ubuntu](https://docs.docker.com/ee/docker-ee/ubuntu/)
 [Using KLEE with Docker](https://klee.github.io/docker/)

@@ -258,7 +258,60 @@ int main(int argc, char* argv[]) {
 找到出错的文件，然后查看对应的测试用例，得到答案是'+42'  
 ![](images/5-10.png) 
 * 之后的实验需要配合文中的软件因此就做到了这里
-8. tutorial 6:Testing Coreutils: In-depth description of how to use KLEE to test GNU Coreutils.
+8. tutorial 6:Testing Coreutils: In-depth description of how to use KLEE to test GNU Coreutils. 
+* 实践了另一种使用klee的方式  
+
+下载并解压[coreutils的源代码](https://ftp.gnu.org/gnu/coreutils/)，本次实验下载的是version 6.11  
+
+Step 1: Build coreutils with gcov  
+```
+cd coreutils-6.11
+mkdir obj-gcov
+cd obj-gcov
+../configure --disable-nls CFLAGS="-g -fprofile-arcs -ftest-coverage"
+# ... verify that configure worked ...
+make
+make -C src arch hostname
+```
+现在，在objc-gcov/src目录中有一组coreutils  
+![](images/6-1.png)  
+这些可执行文件应该使用gcov支持构建，因此如果运行一个可执行文件，它将把.gcda写到当前目录中.可以使用gcov工具本身来生成人类可读的覆盖信息.  
+![](images/6-2.png)
+* 默认情况下，gcov将显示在程序中执行的行数  
+
+Step 2: Install WLLVM
+* 本实验使用的是WLLVM版本1.0.17
+```
+# install pip
+sudo apt install python-pip
+# To install whole-program-llvm
+sudo -H python -m pip install wllvm
+# To successfully execute WLLVM it is necessary to set the environment variable LLVM_COMPILER to the underlying LLVM compiler (either dragonegg or clang)
+export LLVM_COMPILER=clang
+```
+Step 3: Build Coreutils with LLVM
+```
+cd coreutils-6.11
+mkdir obj-llvm
+cd obj-llvm
+CC=wllvm ../configure --disable-nls CFLAGS="-g -O1 -Xclang -disable-llvm-passes -D__NO_STRING_INLINES  -D_FORTIFY_SOURCE=0 -U__OPTIMIZE__"
+# First, we don’t want to add gcov instrumentation in the binary we are going to test using KLEE, so we left of the -fprofile-arcs -ftest-coverage flags. 
+# Second, we added the -O1 -Xclang -disable-llvm-passes flags to CFLAGS. 
+make
+make -C src arch hostname
+```
+现在拥有Coreutils可执行文件  
+![](images/6-3.png)  
+WLLVM获得的是可执行文件，而不是LLVM位码文件。这是因为WLLVM分两步工作。在第一步中，WLLVM调用标准编译器，然后，对于每个对象文件，它还调用一个位码编译器来生成LLVM位码。WLLVM将生成的位码文件的位置存储在目标文件的一个专门部分中。当对象文件链接在一起时，这些位置被连接起来以保存所有组成文件的位置。构建完成后，可以使用WLLVM实用程序extract-bc来读取专用部分的内容，并将所有位代码链接到一个完整的位代码文件中。
+为了获得所有Coreutils的LLVM位码版本，可以对所有可执行文件调用extract-bc:  
+```
+find . -executable -type f | xargs -I '{}' extract-bc '{}'
+ls -l ls.bc
+```
+* 卡在了这里找不到llvm-link一直没能解决，之后的内容大概看了看
+
+Step 4: Using KLEE as an interpreter  
+
 
 9. tutorial 7:Using symbolic environment: Guide with examples on how to use the symbolic environment such as symbolic files and command-line arguments for the program under test. 
 * 熟悉命令行参数
@@ -313,13 +366,47 @@ docker run hello-world
 5. 【tutorial-4】编译链接时报错，因为缺少IDA插件中的defs.h  
 ![](images/wrong5.png)  
 解决：将[defs.h](https://github.com/nihilus/hexrays_tools/blob/master/code/defs.h)添加到main.c同目录下再编译链接。
+6. 【tutorial-6】Step 3: Build Coreutils with LLVM```CC=wllvm ../configure --disable-nls CFLAGS="-g -O1 -Xclang -disable-llvm-passes -D__NO_STRING_INLINES  -D_FORTIFY_SOURCE=0 -U__OPTIMIZE__"```执行报错  
+![](images/wrong6.png)  
+解决办法：重新安装,使用```sudo -H python -m pip install wllvm```.而不是```pip install --upgrade wllvm```
+7. 【tutorial-6】执行```find . -executable -type f | xargs -I '{}' extract-bc '{}'```报错  
+![](images/wrong7.png)
+解决：卡在了这里没能解决。
 ## 实验总结
 1. klee error report:  
 ![](images/error-report.png)
+2. 关于文件压缩和解压缩总结：
+```
+ZIP
+zip可能是目前使用得最多的文档压缩格式。它最大的优点就是在不同的操作系统平台，比如Linux， Windows以及Mac OS，上使用。缺点就是支持的压缩率不是很高，而tar.gz和tar.gz2在压缩率方面做得非常好。闲话少说，我们步入正题吧：
+我们可以使用下列的命令压缩一个目录：
+# zip -r archive_name.zip directory_to_compress
+下面是如果解压一个zip文档：
+# unzip archive_name.zip
+TAR
+Tar是在Linux中使用得非常广泛的文档打包格式。它的好处就是它只消耗非常少的CPU以及时间去打包文件，他仅仅只是一个打包工具，并不负责压缩。下面是如何打包一个目录：
+# tar -cvf archive_name.tar directory_to_compress
+如何解包：
+# tar -xvf archive_name.tar.gz
+上面这个解包命令将会将文档解开在当前目录下面。当然，你也可以用这个命令来捏住解包的路径：
+# tar -xvf archive_name.tar -C /tmp/extract_here/
+TAR.GZ
+这种格式是我使用得最多的压缩格式。它在压缩时不会占用太多CPU的，而且可以得到一个非常理想的压缩率。使用下面这种格式去压缩一个目录：
+# tar -zcvf archive_name.tar.gz directory_to_compress
+解压缩：
+# tar -zxvf archive_name.tar.gz
+上面这个解包命令将会将文档解开在当前目录下面。当然，你也可以用这个命令来捏住解包的路径：
+# tar -zxvf archive_name.tar.gz -C /tmp/extract_here/
+TAR.BZ2
+这种压缩格式是我们提到的所有方式中压缩率最好的。当然，这也就意味着，它比前面的方式要占用更多的CPU与时间。这个就是你如何使用tar.bz2进行压缩。
+```
+
 ## 参考文献
 [klee-tutorials](https://klee.github.io/tutorials/)  
 [Get Docker Engine - Enterprise for Ubuntu](https://docs.docker.com/ee/docker-ee/ubuntu/)  
 [Using KLEE with Docker](https://klee.github.io/docker/)  
 [klee-maze-github](https://github.com/grese/klee-maze)  
-[Coreutils - GNU core utilities](https://www.gnu.org/software/coreutils/)  
+[Coreutils - GNU core utilities](https://www.gnu.org/software/coreutils/)   
+[如何在Linux下创建与解压zip, tar, tar.gz和tar.bz2文件](https://www.cnblogs.com/rookier/p/4349228.html)   
+[zcov](https://github.com/ddunbar/zcov)
 

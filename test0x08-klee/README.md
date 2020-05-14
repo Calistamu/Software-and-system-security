@@ -194,9 +194,22 @@ klee符号执行的结果,一共有四种可能：
 * assert: An assertion failed.
 
 ![](images/3-3.png)
-6. tutorial 4:Keygenning with KLEE and Hex-Rays
+6. tutorial 4:Keygenning with KLEE and Hex-Rays：A beginners explanation of using symbolic execution to solve a small binary’s pseudocode.
+>tutorial-4所需代码存于：code/defs.h和main.c
 
-7. tutorial 5:
+```
+# 编译链接
+clang -I ~/klee_src/include/ -emit-llvm -g -o main.ll -c main.c  
+# 运行
+klee --optimize --libc=uclibc --posix-runtime main.ll --sym-arg 100
+```
+运行结果如下图：  
+![](images/4-1.png)
+分析结果：  
+![](images/4-2.png)
+可以看到'data'中的值就是正确的password  
+7. tutorial 5:Keygenning With KLEE: A more in-depth guide to using KLEE to solve larger binaries.
+
 8. tutorial 6:
 9. tutorial 7:
 ## 实验问题
@@ -222,6 +235,9 @@ docker run hello-world
 4. 【tutorial-2】修改.c文件时，使用vi/vim报错，因为docker容器中vim无法使用  
 ![](images/wrong4.png)  
 解决：```sudo apt-get update && sudo apt-get install vim```
+5. 【tutorial-4】编译链接时报错，因为缺少IDA插件中的defs.h  
+![](images/wrong5.png)  
+解决：将[defs.h](https://github.com/nihilus/hexrays_tools/blob/master/code/defs.h)添加到main.c同目录下再编译链接。
 ## 实验总结
 1. klee error report:  
 ![](images/error-report.png)
@@ -229,4 +245,5 @@ docker run hello-world
 [klee-tutorials](https://klee.github.io/tutorials/)  
 [Get Docker Engine - Enterprise for Ubuntu](https://docs.docker.com/ee/docker-ee/ubuntu/)  
 [Using KLEE with Docker](https://klee.github.io/docker/)  
-[klee-maze](https://github.com/grese/klee-maze)
+[klee-maze-github](https://github.com/grese/klee-maze)  
+

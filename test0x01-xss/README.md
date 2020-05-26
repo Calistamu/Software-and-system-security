@@ -46,15 +46,15 @@ httpd -help  查看帮助
 ```
 * 进入bin目录或将bin目录添加到环境变量
 3)'bin'目录下打开'ApacheMonitor.exe'
-![](images/apache-ok.png)
+![](images/apache-ok.png)  
 4. 网页中输入网址'http://localhost'。如下图所示，由于'htdocs'文件夹下已有自带的index.html（效果如下图所示），说明基本配置完毕。
-![](images/webserver-ok.png)
+![](images/webserver-ok.png)  
 
 * 将写好的.html或.php文件放入htdocs,或如下图所示，更改文件路径。
-![](images/webserver-fileurlchange.png)
+![](images/webserver-fileurlchange.png)  
 
-5. 将已写好的xss.html放入htdocs文件夹,访问'http://localhost/xss.html'发现与我们之前所写的网页效果一样，前端搞定。
-![](images/front-ok.png)
+5. 将已写好的xss.html放入htdocs文件夹,访问'http://localhost/xss.html'发现与我们之前所写的网页效果一样，前端搞定。  
+![](images/front-ok.png)  
 发现输入```<script>alert('xss')</script>```提交后只是刷新，因为后端没有收到提交的数据并反馈一个结果，还需要后端的处理。
 ### 三、 下载安装php并将其与apache配置
 1. [php下载并解压](http://windows.php.net/download/)
@@ -63,21 +63,21 @@ httpd -help  查看帮助
 2. 由于后续 WebPageTest 的需要，[下载 APC](http://pecl.php.net/package/APCu)，解压后拷贝php_apcu.dll到'php/ext'文件夹下
 3. 'php'文件夹下，重命名php.ini-development为php.ini。如下修改：    
 1）; extension_dir = "ext"为extension_dir = "...php7/ext"（ext绝对路径）  
-![](images/php-dirchange.png)
-2）需要的扩展去掉';',并且添加我们自己下载的php_apcu.dll
-![](images/php-extensions.png)
+![](images/php-dirchange.png)  
+2）需要的扩展去掉';',并且添加我们自己下载的php_apcu.dll  
+![](images/php-extensions.png)  
 4. 添加php模块:在Apache配置文件中，很多'#LoadModulexxx'后添加```PHPIniDir "php文件夹路径"```和```LoadModule php7_module "php文件夹路径/php7apache2_4.dll"```
 ![](images/add-module.png)
 5. 添加php文件后缀:在Apache配置文件中，IfModule mime_module与/IfModule标签之间，添加```AddType application/x-httpd-php .php```
-![](images/add-suffix.png)
+![](images/add-suffix.png)  
 6. (这一步只是决定了主页，是否操作没太大影响)将index.php设置在index.html前
 ```
 <IfModule dir_module>
     DirectoryIndex index.php index.html
 </IfModule>
 ```
-再次访问'http://localhost'，看到php与apache配置完成。如果没有进行第六步操作，则访问‘http://localhost/index.php'
-![](images/php-ok.png)
+再次访问'http://localhost'，看到php与apache配置完成。如果没有进行第六步操作，则访问‘http://localhost/index.php'  
+![](images/php-ok.png)  
 ### 四、xss漏洞利用
 xss.php代码如下
 >code/xss.php
@@ -101,9 +101,9 @@ echo 'output:<br>'.$XssReflex;
 </html>
 ```
 访问网页，输入任意数据，就有了反馈结果，如下图
-![](images/xssphp.png)
+![](images/xssphp.png)  
 输入漏洞测试语句```<script>alert('xss')</script>```结果如下图所示
-![](images/usexss.png)
+![](images/usexss.png)  
 ## 实验效果
 >video/xss漏洞搭建及利用平台.mp4  
 [在线视频](https://www.bilibili.com/video/av95722607)
@@ -116,3 +116,7 @@ echo 'output:<br>'.$XssReflex;
 1. 在vs code的setting.json中添加php的路径：  
 “php.validate.executablePath”: “D:/xampp/php/php.exe” 
 2. vs code安装完成后下载php debug插件
+## 参考文献
+[如何在vscode配置php开发环境](https://blog.csdn.net/summer2day/article/details/78534352)   
+[php下载并解压](http://windows.php.net/download/)  
+[apache安装教程](https://www.cnblogs.com/wcwnina/p/8044353.html) 

@@ -45,8 +45,14 @@ httpd -v   查看apache服务版本号
 httpd -help  查看帮助 
 ```
 * 进入bin目录或将bin目录添加到环境变量
+<<<<<<< Updated upstream
 3)'bin'目录下打开'ApacheMonitor.exe'
 ![](images/apache-ok.png)
+=======
+
+3)'bin'目录下打开'ApacheMonitor.exe'  
+![](images/apache-ok.png)  
+>>>>>>> Stashed changes
 4. 网页中输入网址'http://localhost'。如下图所示，由于'htdocs'文件夹下已有自带的index.html（效果如下图所示），说明基本配置完毕。
 ![](images/webserver-ok.png)
 

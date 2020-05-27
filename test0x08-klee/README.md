@@ -2,7 +2,7 @@
 
 ## 实验要求
 - [x]安装KLEE
-- []完成官方tutorials
+- [x]完成官方tutorials
 ## 实验环境
 ubuntu 18.04 server
 ## 实验步骤

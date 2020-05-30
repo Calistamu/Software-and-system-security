@@ -122,3 +122,4 @@ echo 'output:<br>'.$XssReflex;
 1. 在vs code的setting.json中添加php的路径：  
 “php.validate.executablePath”: “D:/xampp/php/php.exe” 
 2. vs code安装完成后下载php debug插件
+## 实验总结

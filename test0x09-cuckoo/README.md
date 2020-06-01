@@ -5,7 +5,9 @@
 ## 实验环境
 ubuntu 16.04 desktop
 ## 实验步骤
-### 一、 安装cuckoo  
+
+### 宿主机准备
+#### 一、 安装cuckoo  
 1. 安装依赖
 * 本次实验安装了:所有相关的python libraries,virtualbox,tcpdump,M2Crypto,guacd.没有安装Volatility
 * [Volatility](https://github.com/volatilityfoundation):内存取证工具,结合cuckoo,分析更深度与全面，可以防止恶意软件利用rookit技术逃逸沙箱。要根据python的版本进行选择安装。
@@ -60,7 +62,9 @@ cuckoo
 # 查看帮助
 cuckoo --help
 ```
-看到如下页面说明安装成功,版本是2.0.7    
+看到如下页面说明安装成功,版本是2.0.7,CWD目录为'home/mudou/.cuckoo'.
+* CWD的具体路径默认是在当前用户目录下 ~/.cuckoo.配置文件在$CWD/conf目录下,CWD的具体路径可更改。
+
 ![](images/setup-ok.png)  
 * 
 2. 
@@ -91,6 +95,27 @@ ps -e|grep ssh
 # change port
 vim /etc/ssh/sshd_config
 ```
+4. 第二次安装了虚拟机后启动cuckoo出现了:  
+'Vulnerable dependencies found
+--> Vulnerable version of virtualbox installed (5.1.38). It is highly recommended to update. Please update and restart Cuckoo. Recommended version: >=5.2.28'  
+![](images/wrong4.png)  
+解决：[Cuckoo Sandbox 2.0.7](https://cuckoosandbox.org/blog/207-interim-release/) 
+进入到工作目录下修改配置文件cuckoo.conf:  
+![](images/wrong6.png)  
+设置ignore_vulnerabilities = yes  
+![](images/wrong5.png)  
+出现报错'CuckooCriticalError: Unable to bind ResultServer'  
+![](images/wrong8.png)  
+参考[FAQ](https://cuckoo.sh/docs/faq/#troubles-problem),执行：  
+```
+# If the hostonly interface vboxnet0 does not exist already.
+$ VBoxManage hostonlyif create
+
+# Configure vboxnet0.
+$ VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.255.0
+```
+启动,出现报错'CuckooCriticalError: Please update your configuration.'：  
+![](images/wrong7.png)
 ## 实验总结
 1. cuckoo configuration files
 * cuckoo.conf: for configuring general behavior and analysis options.

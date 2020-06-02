@@ -113,13 +113,20 @@ echo 'output:<br>'.$XssReflex;
 ## 实验效果
 >video/xss漏洞搭建及利用平台.mp4  
 [在线视频](https://www.bilibili.com/video/av95722607)
-## 另一种实验方法：vs code 调试运行.php文件
-[如何在vscode配置php开发环境](https://blog.csdn.net/summer2day/article/details/78534352)  
-具体实验过程和效果
+## 第二种实验方法：vs code 调试运行.php文件
+* 参考[如何在vscode配置php开发环境](https://blog.csdn.net/summer2day/article/details/78534352)  
+### 实验环境
+win10+vscode
+### 实验步骤
+具体实验过程和效果：
 >video/xss漏洞搭建及利用平台.mp4  
 [在线视频](https://www.bilibili.com/video/av97632428)  
 视频中缺漏：  
 1. 在vs code的setting.json中添加php的路径：  
 “php.validate.executablePath”: “D:/xampp/php/php.exe” 
 2. vs code安装完成后下载php debug插件
+
+## 第三种实验方法：
+
 ## 实验总结
+1. 对于工具的选用，应该根据自己的实验的需求进行选择。本次实验，第一次实验方法的工具就显得重量级，方法步骤都比较麻烦。

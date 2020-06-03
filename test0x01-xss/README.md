@@ -126,7 +126,7 @@ win10+vscode
 “php.validate.executablePath”: “D:/xampp/php/php.exe” 
 2. vs code安装完成后下载php debug插件
 
-## 第三种实验方法
+## 第三种实验方法：更轻量级地web服务器和更方便的配置
 * 参考[How To Install Linux, Nginx, MySQL, PHP (LEMP stack) in Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-in-ubuntu-16-04)
 * 由于本次xss依然使用Php超级变量，是反射型xss，没有用到mysql，因此没有进行mysql的安装
 ### 实验环境
@@ -177,6 +177,8 @@ vi /etc/ssh/sshd_config
 ![](images/nginx-xss-ok.png)  
 输入```<script>alert('xss')</script>```，出现了弹窗，实验成功。  
 ![](images/xss-inputed.png)  
+### 实验效果
+
 ## 实验问题
 1. 【第一种方法】Php版本如果下错了的话没有php7apache2_4.dll  
 分析解决：php的版本应该与apache的版本相对应   
@@ -193,6 +195,7 @@ vi /etc/ssh/sshd_config
 * 应该回顾，反思总结实验过程。不然演示的时候，自己就挂在那里。
 * 应该勇敢地表达自己知道或不知道。
 ## 参考文献
-[在 Windows 下安装、配置 Apache 2.4 和 PHP 7 ](https://ntflc.com/2017/06/04/Install-Apache-and-PHP-on-Windows/)  
+[在 Windows 下安装、配置 Apache 2.4 和 PHP 7 ](https://ntflc.com/2017/06/04/Install-Apache-and-PHP-on-Windows/)   
 [如何在vscode配置php开发环境](https://blog.csdn.net/summer2day/article/details/78534352)   
-[建站教程（三）：在Ubuntu上配置Nginx+MySQL+PHP7](https://zhuanlan.zhihu.com/p/37593436)  
+[建站教程（三）：在Ubuntu上配置Nginx+MySQL+PHP7](https://zhuanlan.zhihu.com/p/37593436)   
+[Serve PHP with PHP-FPM and NGINX](https://www.linode.com/docs/web-servers/nginx/serve-php-php-fpm-and-nginx/)   

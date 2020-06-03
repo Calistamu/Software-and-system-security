@@ -126,7 +126,73 @@ win10+vscode
 “php.validate.executablePath”: “D:/xampp/php/php.exe” 
 2. vs code安装完成后下载php debug插件
 
-## 第三种实验方法：
+## 第三种实验方法
+* 参考[How To Install Linux, Nginx, MySQL, PHP (LEMP stack) in Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-in-ubuntu-16-04)
+* 由于本次xss依然使用Php超级变量，是反射型xss，没有用到mysql，因此没有进行mysql的安装
+### 实验环境
+ubuntu16.04-desktop-x64+nginx+php
+### 实验步骤
+1. 安装nginx
+```
+apt-get update
+apt-get install nginx
+```
+访问'http:localhost:80/'看到nginx的页面，安装成功  
+![](images/nginx-ok.png)
+2. 安装php
+```
+apt-get install php-fpm php-mysql
+```
+3. 配置Nginx使用PHP
+* 参考[Serve PHP with PHP-FPM and NGINX](https://www.linode.com/docs/web-servers/nginx/serve-php-php-fpm-and-nginx/)
+```
+# 修改nginx配置文件
+vim /etc/nginx/sites-available/default
+```
+更改如下图：  
+![](images/nginx-php-set.png)
+```
+# 检查文件有没有错误
+sudo nginx -t
+# 重启nginx
+/etc/init.d/nginx restart
 
+# 增加测试info.php
+vim /var/www/html/info.php
+# 代码如下
+<?php 
+phpinfo();
+?>
+```
+访问页面看到：  
+![](images/nginx-php-ok.png)
+4. 将xss.php放到/var/www/html/文件夹下，再次访问
+```
+# 安装ssh
+sudo apt-get install openssh-server
+# 修改配置文件/etc/ssh/sshd_config
+vi /etc/ssh/sshd_config
+```
+看到xss.php的内容：  
+![](images/nginx-xss-ok.png)  
+输入```<script>alert('xss')</script>```，出现了弹窗，实验成功。  
+![](images/xss-inputed.png)  
+## 实验问题
+1. 【第一种方法】Php版本如果下错了的话没有php7apache2_4.dll  
+分析解决：php的版本应该与apache的版本相对应   
+2. 【第三种方法】使用scp拷贝xss.php时出现报错：'Permission Denied'  
+![](images/wrong3.png)  
+解决：```sudo chmod 777 /var/www/html```之后再ssh  
 ## 实验总结
-1. 对于工具的选用，应该根据自己的实验的需求进行选择。本次实验，第一次实验方法的工具就显得重量级，方法步骤都比较麻烦。
+1. 对于工具的选用总结。  
+* 首先，应该广泛使用各种工具，熟悉基本操作，对比各个工具的特点。(目前自己用过的还比较少)
+* 其次，应该根据自己的实验的需求进行适当的选择。本次实验，第一次实验方法的工具就显得重量级，方法步骤都比较麻烦。
+2. 对于自我学习的反思总结：  
+* 不应该图轻松吃别人咀嚼过的食物，虽然官方文档的成长路有些漫长，却是最好的选择，所有的配置和操作都有理有据。(这里解决了，从前学习的时候总想问为什么要这样操作的问题。所有的操作并不是凭空想象，全都有理有据。)  
+* 读官方文档应该逐字逐句，我的缺点是跳跃阅读。  
+* 应该回顾，反思总结实验过程。不然演示的时候，自己就挂在那里。
+* 应该勇敢地表达自己知道或不知道。
+## 参考文献
+[在 Windows 下安装、配置 Apache 2.4 和 PHP 7 ](https://ntflc.com/2017/06/04/Install-Apache-and-PHP-on-Windows/)  
+[如何在vscode配置php开发环境](https://blog.csdn.net/summer2day/article/details/78534352)   
+[建站教程（三）：在Ubuntu上配置Nginx+MySQL+PHP7](https://zhuanlan.zhihu.com/p/37593436)  

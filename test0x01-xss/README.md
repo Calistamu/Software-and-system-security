@@ -119,7 +119,7 @@ echo 'output:<br>'.$XssReflex;
 win10+vscode
 ### 实验步骤
 具体实验过程和效果：
->video/xss漏洞搭建及利用平台.mp4  
+>video/xss漏洞搭建及利用平台-改进版.mp4  
 [在线视频](https://www.bilibili.com/video/av97632428)  
 视频中缺漏：  
 1. 在vs code的setting.json中添加php的路径：  
@@ -178,13 +178,15 @@ vi /etc/ssh/sshd_config
 输入```<script>alert('xss')</script>```，出现了弹窗，实验成功。  
 ![](images/xss-inputed.png)  
 ### 实验效果
-
+>video/xss漏洞搭建及利用平台-改进再改进版.mp4  
 ## 实验问题
 1. 【第一种方法】Php版本如果下错了的话没有php7apache2_4.dll  
 分析解决：php的版本应该与apache的版本相对应   
 2. 【第三种方法】使用scp拷贝xss.php时出现报错：'Permission Denied'  
 ![](images/wrong3.png)  
 解决：```sudo chmod 777 /var/www/html```之后再ssh  
+* Chmod 777 (chmod a+rwx) sets permissions so that, (U)ser / owner can read, can write and can execute. (G)roup can read, can write and can execute. (O)thers can read, can write and can execute.
+* Chmod 754 (chmod a+rwx,g-w,o-wx) sets permissions so that, (U)ser / owner can read, can write and can execute. (G)roup can read, can't write and can execute. (O)thers can read, can't write and can't execute.
 ## 实验总结
 1. 对于工具的选用总结。  
 * 首先，应该广泛使用各种工具，熟悉基本操作，对比各个工具的特点。(目前自己用过的还比较少)
@@ -199,3 +201,5 @@ vi /etc/ssh/sshd_config
 [如何在vscode配置php开发环境](https://blog.csdn.net/summer2day/article/details/78534352)   
 [建站教程（三）：在Ubuntu上配置Nginx+MySQL+PHP7](https://zhuanlan.zhihu.com/p/37593436)   
 [Serve PHP with PHP-FPM and NGINX](https://www.linode.com/docs/web-servers/nginx/serve-php-php-fpm-and-nginx/)   
+[Chmod 754](https://chmodcommand.com/chmod-754/)  
+[Chmod 777](https://chmodcommand.com/chmod-777/)

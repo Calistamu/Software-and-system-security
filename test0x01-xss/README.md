@@ -179,6 +179,8 @@ vi /etc/ssh/sshd_config
 ![](images/xss-inputed.png)  
 ### 实验效果
 >video/xss漏洞搭建及利用平台-改进再改进版.mp4  
+
+[在线视频](https://www.bilibili.com/video/BV1gZ4y1H7Jj)
 ## 实验问题
 1. 【第一种方法】Php版本如果下错了的话没有php7apache2_4.dll  
 分析解决：php的版本应该与apache的版本相对应   

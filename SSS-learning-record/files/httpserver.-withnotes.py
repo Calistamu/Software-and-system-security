@@ -4,7 +4,7 @@ import sys
 import cgi
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-# MyHTTPRequestHandler 类，这个是 HTTPServer 的回调，用来处理到达的请求。
+# MyHTTPRequestHandler 类，这个是HTTPServer的回调，用来处理到达的请求。
 # 也就是0.0.0.0:8080 上有任何的HTTP请求到达时，都会调用 MyHTTPRequestHandler来处理。
 # MyHTTPRequestHandler 直接 继承自 BaseHTTPRequestHandler，其中BaseHTTPRequestHandler 的 do_GET和do_POST两个方法被重写。
 # 在 python 的 BaseHTTPRequestHandler 类中 ，do_XXX函数，就是处理对应的客户端请求的函数。
@@ -35,7 +35,8 @@ class MyHTTPRequestHandler(BaseHTTPRequestHandler):
             file = open("."+self.path, "rb")
             #self.path 是这个请求的路径 。
             #比如，我们这里的 http://127.0.0.1:8080/a.html 其中 http://127.0.0.1:8080是协议服务器地址和端口。/a.html就是路径。
-            #通常，一个静态的http服务器，这里的路径就是http服务器根目录下的文件，动态服务器这里可能是文件和参数，或者是对应其他服务器后台的处理过程。
+            #通常，一个静态的http服务器，这里的路径就是http服务器根目录下的文件，动态服务器这里可能是文件和参数，
+            #或者是对应其他服务器后台的处理过程。
             #例如 http://127.0.0.1:8080/a.php?p1=x，指定有a.php来处理这个请求，参数是p1=x。问号后面是参数，可以有多个。
             #那么所以我们就去读 a.html文件。
         except FileNotFoundError as e:

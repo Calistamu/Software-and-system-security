@@ -10,6 +10,7 @@
 ## 实验过程
 
 1. 准备数据库并建表。
+* [sqlite](https://www.sqlite.org/index.html)
 ```
 sqlite3 edu.db
 create table studentsinfo(course_id INTEGER,student_id INTEGER,grades INTEGER);
@@ -21,7 +22,8 @@ create table studentsinfo(course_id INTEGER,student_id INTEGER,grades INTEGER);
 
 ![](images/webpages.png)
 3. 更改httpserver.py实现成绩录入和成绩查询。
->code/httpserver.py是服务器代码
+>code/httpserver.py是更改后的服务器代码
+>code/httpserver-copy.py是老师的未更改代码
 ## 实验效果
 >video/web开发演示效果.mp4  
 * gif展示的效果不清晰，因此mp4文件保留  

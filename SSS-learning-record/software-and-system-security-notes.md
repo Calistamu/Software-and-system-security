@@ -59,7 +59,7 @@ xss的由来：
 
 #### 老师的演示
 
-使用python最基本的http 服务器的方式。代码具体如下：
+使用python最基本的http服务器的方式。代码具体如下：
 >files/httpserver.py  
 >files/httpserver.py增加了对代码的解读
 [http请求的多种methods](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods)  

@@ -6,7 +6,7 @@
 ubuntu 16.04 desktop
 ## 实验步骤
 
-### 宿主机准备
+### 宿主机HOST准备
 #### 一、 安装cuckoo  
 1. 安装依赖
 * 本次实验安装了:所有相关的python libraries,virtualbox,tcpdump,M2Crypto,guacd.没有安装Volatility
@@ -66,8 +66,20 @@ cuckoo --help
 * CWD的具体路径默认是在当前用户目录下 ~/.cuckoo.配置文件在$CWD/conf目录下,CWD的具体路径可更改。
 
 ![](images/setup-ok.png)  
-* 
-2. 
+3. 更改配置文件  
+修改cuckoo.conf
+```
+cd ~/.cuckoo/conf
+sudo vim cuckoo.conf
+
+# 确保以下内容:
+# This option defines which Machinery module you want Cuckoo to use to interact with your analysis machines. The value must be the name of the module without extension (e.g., virtualbox or vmware).
+[cuckoo]
+machinery = virtualbox
+```
+![](images/define-machinery.png)
+
+4.
 ```
 # 开启mongodb
 sudo systemctl enable mongodb
@@ -118,6 +130,7 @@ $ VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.25
 ![](images/wrong7.png)
 ## 实验总结
 1. cuckoo configuration files
+* ~/.cuckoo/conf/
 * cuckoo.conf: for configuring general behavior and analysis options.
 * auxiliary.conf: for enabling and configuring auxiliary modules.
 * <machinery>.conf: for defining the options for your virtualization software (the file has the same name of the machinery module you choose in cuckoo.conf).

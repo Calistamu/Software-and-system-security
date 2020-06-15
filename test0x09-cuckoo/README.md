@@ -3,7 +3,9 @@
 - [] 安装并使用cuckoo
 - [] 任意找一个程序，在cuckoo中trace获取软件行为的基本数据。
 ## 实验环境
-ubuntu 16.04 desktop
+host：ubuntu 18.04 LTS    
+guest: windows xp-sp3     
+两个主机都是双网卡：NAT+host-only(并且是同一个网络)   
 ## 实验步骤
 
 ### 宿主机HOST准备

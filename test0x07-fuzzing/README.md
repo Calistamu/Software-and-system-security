@@ -51,3 +51,6 @@
 [D-Link系列路由器漏洞挖掘入门](https://paper.seebug.org/429/)  
 [利用DVRF学习固件分析系列（一）](https://www.anquanke.com/post/id/84580)  
 [D-Link DIR-850L路由器分析之获取设备shell](https://cq674350529.github.io/2019/03/18/D-Link-DIR-850L%E8%B7%AF%E7%94%B1%E5%99%A8%E5%88%86%E6%9E%90%E4%B9%8B%E8%8E%B7%E5%8F%96%E8%AE%BE%E5%A4%87shell/)  
+[D-Link 850L&645路由漏洞分析](https://xz.aliyun.com/t/2941)    
+[dir815_FW_102.bin路由器固件解压碰到的坑](https://www.jianshu.com/p/29c99274ff85)  
+[DLink路由器固件的一次分析记录](https://bbs.pediy.com/thread-209773.htm)

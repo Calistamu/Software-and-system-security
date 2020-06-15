@@ -186,4 +186,6 @@ $ VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.25
 ## 参考文献
 [cuckoosandbox](https://cuckoosandbox.org/)  
 [Introduction](https://cuckoo.readthedocs.io/en/latest/introduction/)  
-[usage](https://cuckoo.readthedocs.io/en/latest/usage/start/)
+[usage](https://cuckoo.readthedocs.io/en/latest/usage/start/)  
+[cuckoo中文](https://cuckoo-sandbox.readthedocs.io/zh_CN/latest/introduction/sandboxing.html)   
+[从零开始安装配置Cuckoo sandbox并提交样本进行分析](https://www.cnblogs.com/BenjaminNL/p/11139517.html)

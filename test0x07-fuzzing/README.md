@@ -31,21 +31,30 @@ sudo apt install binwalk
 接下来提取文件的方式有两种，无论哪种方法，得到的结果是一样的。  
 一：使用 binwalk -Me 命令提取该文件。  
 二：使用 unsquashfs 190090.squashfs 命令来提取文件。  
+* [SquashFS HOWTO](https://www.tldp.org/HOWTO/html_single/SquashFS-HOWTO/)
 * 重命名原有的squashfs-root为squashfs-root-old.  
 
 binwalk提取的结果如下图：   
 ![](images/ex-3.png)  
 unsquashfs 190090.squashfs提取结果如下图：  
 ![](images/ex-4.png)
-* 此处的'create_inode: could not create character device squashfs-root/dev/XXX, because you're not superuser!'是正常的，因此需要特别的权限create device files，并不会影响本次实验
+* 此处的'create_inode: could not create character device squashfs-root/dev/XXX, because you're not superuser!'是正常的，因此需要特别的权限create device files，并不会影响本次实验.[could not create character device "foo" because you're not superuser!](https://github.com/devttys0/sasquatch/issues/14)  
+
 ![](images/ex-5.png)
 ### 二、模拟运行固件
 1. 安装qemu
 * [qume](https://qume.io/)和[qemu](https://www.qemu.org/)傻傻分不清
+* [Download QEMU](https://www.qemu.org/download/)
 * user mode
 ```
 sudo apt-get install qemu 
+# 或sudo apt-get install qemu-user-static
 ```
+![](images/qemu-ok.png)
+2. 进入squashfs-root目录，将将qemu-mips-static拷贝到当前目录下
+* 这里出现两个qemu-mips-static，选择前一个可执行文件
+
+![](images/run-1.png)
 ## 实验问题
 ## 实验总结
 1. 路由器厂家学习

@@ -8,23 +8,54 @@
 ## 实验步骤
 ### 一、固件下载并提取
 1. 固件准备。  
-使用scp将dir-850l.zip和dir-850l.exe拷贝到虚拟机中，，解压缩dir-850l.zip,得到DIR850L_FW113WWb01_f4if.bin文件，为了方便，更改文件名称为dir850l.bin。  
-* [D-Link DIR-850L 固件下载](http://driver.zol.com.cn/detail/47/463483.shtml#download-box)或[D-Link DIR-850L 固件下载-驱动天空](https://www.drvsky.com/dlink/DIR-850L.htm#download)
+固件下载地址：[DIR 850l-Download direct](http://files.dlink.com.au/products/DIR-850L)
+```
+# 物理机上操作：
+scp DIR850LA1_FW114WWb07.bin mudou@192.168.57.117:/home/mudou/dir-850l/
+# 虚拟机中操作：
+mkdir dir850l
+mv DIR850LA1_FW114WWb07.bin dir850l.bin
+```
 2. 安装binwalk  
 * [ubuntu 16.04 LTS-binwalk-manual](http://manpages.ubuntu.com/manpages/xenial/en/man1/binwalk.1.html)
 ```
 sudo apt install binwalk
 ```
 ![](images/binwalk-ok.png)  
-3. 固件提取  
+3. 提取固件
+```
+binwalk -Me dir850l.bin
+unsquashfs 190090.squashfs
+```
+### 二、模拟运行固件
+1. 安装qemu
+* [qume](https://qume.io/)和[qemu](https://www.qemu.org/)傻傻分不清
+* [Download QEMU](https://www.qemu.org/download/)
+* user mode
+```
+sudo apt-get install qemu 
+# 或sudo apt-get install qemu-user-static
+```
+![](images/qemu-ok.png)
+2. 进入squashfs-root目录，将将qemu-mipsel-static拷贝到当前目录下
+![](images/run-1.png)
 
+## 实验问题
+1. 固件提取第一次尝试结果
+* （没有错，但是不是官方的文件，总有些别扭，因此重新再来）  
+
+固件下载地址：  
+* [D-Link DIR-850L 固件下载](http://driver.zol.com.cn/detail/47/463483.shtml#download-box)
+* [D-Link DIR-850L 固件下载-驱动天空](https://www.drvsky.com/dlink/DIR-850L.htm#download)
+
+使用scp将dir-850l.zip和dir-850l.exe拷贝到虚拟机中，，解压缩dir-850l.zip,得到DIR850L_FW113WWb01_f4if.bin文件，为了方便，更改文件名称为dir850l.bin。 
 ```binwalk -Me dir850l.bin```提取固件，得到_dir850l.bin.extracted文件夹。
 ![](images/ex-1.png)
-可以看到Squashfs系统，小端法。
-* 这里md5校验码不一样是因为不是从官网下载，从别的网站上下载的zip文件，打包了别的东西。(在之后的分析中可以看到这里的想法是正确的。)  
+可以看到Squashfs系统，小端法。压缩包的md5校验码和压缩包内部2888文件的校验码
+* 因为不是从官网下载，从别的网站上下载的zip文件，打包了别的东西。(在之后的分析中可以看到这里的想法是正确的。)  
 
 重命名_dir850l.bin.extracted为dir850l。进入dir850l文件夹中看到190090.squashfs是我们的目标文件
-* 此时这里已经有squashfs-root应该是别人已经分析过的文件.
+* 此时这里已经有squashfs-root应该是因为这是别人已经分析过的文件.
 
 ![](images/ex-2.png)
 
@@ -41,21 +72,6 @@ unsquashfs 190090.squashfs提取结果如下图：
 * 此处的'create_inode: could not create character device squashfs-root/dev/XXX, because you're not superuser!'是正常的，因此需要特别的权限create device files，并不会影响本次实验.[could not create character device "foo" because you're not superuser!](https://github.com/devttys0/sasquatch/issues/14)  
 
 ![](images/ex-5.png)
-### 二、模拟运行固件
-1. 安装qemu
-* [qume](https://qume.io/)和[qemu](https://www.qemu.org/)傻傻分不清
-* [Download QEMU](https://www.qemu.org/download/)
-* user mode
-```
-sudo apt-get install qemu 
-# 或sudo apt-get install qemu-user-static
-```
-![](images/qemu-ok.png)
-2. 进入squashfs-root目录，将将qemu-mips-static拷贝到当前目录下
-* 这里出现两个qemu-mips-static，选择前一个可执行文件
-
-![](images/run-1.png)
-## 实验问题
 ## 实验总结
 1. 路由器厂家学习
 * [全球最好的八大消费类路由器品牌商](https://tnext.org/3773.html)
@@ -95,7 +111,12 @@ system mode:qemu-system-mips(mipsel) : 用户可以为QEMU虚拟机指定运行�
 
 4. 熵：一个系统越是有序，信息熵就越低；反之，一个系统越是混乱，信息熵就越高。  
 * [Differentiate Encryption From Compression Using Math](http://www.devttys0.com/2013/06/differentiate-encryption-from-compression-using-math/):The entropy of data can tell us a lot about the data’s contents. Encrypted data is typically a flat line with no variation, while compressed data will often have at least some variation.  
-* [Encryption vs Compression, Part 2](http://www.devttys0.com/2013/06/encryption-vs-compression-part-2/)    
+* [Encryption vs Compression, Part 2](http://www.devttys0.com/2013/06/encryption-vs-compression-part-2/)  
+5. 本次实验dir-850l固件下载地址集锦：
+* [D-Link DIR-850L 固件下载](http://driver.zol.com.cn/detail/47/463483.shtml#download-box)
+* [D-Link DIR-850L 固件下载-驱动天空](https://www.drvsky.com/dlink/DIR-850L.htm#download)
+* [D-LINK官网](https://support.dlink.com/ProductInfo.aspx?m=dir-850L)
+* [DIR-850L-D-Link Australia & New Zealand Support Resources](http://support.dlink.com.au/Download/download.aspx?product=DIR-850L)  
 ## 参考文献
 [boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/)  
 [QEMU](https://www.qemu.org/)  

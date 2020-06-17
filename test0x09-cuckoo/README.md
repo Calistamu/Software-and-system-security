@@ -258,11 +258,28 @@ enabled = yes
 # 也许还有其他要改的，但是这个最重要，其他是yes还是no更多的是看你的需要，或者之后在使用时再来配置文件里面打开
 ```
 ### 提交样本并分析
+1. 避免一些报错的必要设置
 ```
-# 在安装tcpdump的时候就以及解决了权限问题，这里如果出现问题，再执行一遍
+# 在安装tcpdump的时候就以及解决了权限问题，这里如果出现报错'Unable to stop auxiliary module: Sniffer'，再执行一遍
 sudo apt-get install apparmor-utils
 sudo aa-disable /usr/sbin/tcpdump
+
+cd ~/.cuckoo/analyzer/windows/modules/auxiliary
+sudo vim recentfiles.py
+# 注释以下代码块，避免'AttributeError: function 'SHGetKnownFolderPath' not found'报错
+   r = SHELL32.SHGetKnownFolderPath(
+         uuid.UUID(self.locations[location]).get_bytes_le(),
+         0, None, ctypes.byref(dirpath)
+     )
+   if r:
+         log.warning("Error obtaining user directory: 0x%08x", r)
+         return
 ```
+* ['AttributeError: function 'SHGetKnownFolderPath' not found'报错解决参考](https://github.com/cuckoosandbox/cuckoo/issues/1934) 
+
+recentfiles.py更改如下图：  
+![](images/neglect.png) 
+2.  
 ## 实验问题
 1. win10不可直接安装cuckoo  
 ![](images/wrong1.png)  

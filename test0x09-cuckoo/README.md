@@ -266,7 +266,7 @@ sudo aa-disable /usr/sbin/tcpdump
 
 cd ~/.cuckoo/analyzer/windows/modules/auxiliary
 sudo vim recentfiles.py
-# 注释以下代码块，避免'AttributeError: function 'SHGetKnownFolderPath' not found'报错
+# 注释以下代码段，避免'AttributeError: function 'SHGetKnownFolderPath' not found'报错
    r = SHELL32.SHGetKnownFolderPath(
          uuid.UUID(self.locations[location]).get_bytes_le(),
          0, None, ctypes.byref(dirpath)
@@ -279,7 +279,9 @@ sudo vim recentfiles.py
 
 recentfiles.py更改如下图：  
 ![](images/neglect.png) 
-2.  
+2.  运行cuckoo  
+打开两个终端，一个先输入cuckoo -d，另一个再输入cuckoo web runserver，接着用浏览器打开127.0.0.1:8000登录到cuckoo的web服务页面。  
+
 ## 实验问题
 1. win10不可直接安装cuckoo  
 ![](images/wrong1.png)  
@@ -321,14 +323,29 @@ $ VBoxManage hostonlyif create
 # Configure vboxnet0.
 $ VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.255.0
 ```
-启动,出现报错'CuckooCriticalError: Please update your configuration.'：  
+再次启动cuckoo,出现报错'CuckooCriticalError: Please update your configuration.'：  
 ![](images/wrong7.png)
-但是出现这样的错误是因为此时还没有修改配置文件进行修改，并不是真的错。   
+但是出现这样的错误是因为此时还没有修改配置文件进行修改，并不是真的错。
+
 5. 一开始使用ubuntu16.04来做实验，之后更换了虚拟机，新的虚拟机安装ssh.(再写一遍加深记忆)  
 解决：```sudo apt-get install openssh-server``` 
+
 6. 运行cuckoo时，command not found报错  
 ![](images/wrong9.png)  
 解决：如上图所示。执行```cp  /home/(username)/.local/bin/cuckoo  /usr/local/bin```以后再次运行，看到成功。
+
+7. 更改配置后运行cuckoo -d出现报错  
+![](images/file-limit.png)   
+解决：
+
+8. xp运行状态下，ubuntu突然重启后，再次运行xp，出现两个弹窗的报错。
+![](images/vm-wrong2.png)      
+![](images/vm-wrong.png)    
+解决：[参考](https://www.ostechnix.com/how-to-fix-kernel-driver-not-installed-rc-1908-virtualbox-error-in-ubuntu/)  
+```
+sudo apt upgrade
+sudo apt install virtualbox-dkms
+```
 ## 实验总结
 1. cuckoo configuration files
 * ~/.cuckoo/conf/

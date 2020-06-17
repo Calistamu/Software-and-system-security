@@ -16,6 +16,7 @@ guest: windows xp-sp3
 * [M2Crypto](https://pypi.org/project/M2Crypto/)
 * [guacamole/guacd](https://hub.docker.com/r/guacamole/guacd):guacd is the native server-side proxy used by the Apache Guacamole web application.
 * [pydeep](https://pydeep.readthedocs.io/en/latest/welcome.html):PyDeep is a machine learning / deep learning library with focus on unsupervised learning. 
+* [virtuaenv](https://pan.baidu.com/s/1Zf7xJSG4WFmPKXEdt1rguQ):A tool for creating isolated virtual python environments.
 ```
 # 官网要求安装的依赖
 $ sudo apt-get install python python-pip python-dev libffi-dev libssl-dev
@@ -28,6 +29,7 @@ $ sudo pip install XenAPI
 # 以上步骤发现官方指南安装的依赖不够，还需要本次实验要用的依赖：
 sudo apt-get install git mongodb libffi-dev build-essential python-django python python-dev python-pip python-pil python-sqlalchemy python-bson python-dpkt python-jinja2 python-magic python-pymongo python-gridfs python-libvirt python-bottle python-pefile python-chardet tcpdump -y
 
+# 本次实验没有使用virtual software
 # install virtual software
 $ echo deb http://download.virtualbox.org/virtualbox/debian xenial contrib | sudo tee -a /etc/apt/sources.list.d/virtualbox.list
 $ wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
@@ -81,6 +83,7 @@ pydeep版本：
 2. 安装cuckoo
 * 第一次直接安装很顺畅，第二次使用官网推荐的(可选但推荐就试了试)虚拟机内安装，安装后出现太多报错。无奈之后很多次报错，最后只好直接安装。
 * [KVM](https://help.ubuntu.com/community/KVM)
+
 ```
 # 如果没有安装依赖，安装以下依赖
 sudo apt-get install libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk
@@ -92,7 +95,8 @@ $ sudo usermod -a -G vboxusers cuckoo
 #If you’re using KVM or any other libvirt based module, make sure the new user belongs to the “libvirtd” group (or the group your Linux distribution uses to run libvirt):
 $ sudo usermod -a -G libvirtd cuckoo
 
-# install cuckoo (using virtualenv)
+# 本次实验没有使用virtualenv
+# install cuckoo 
 $ virtualenv venv
 $ . venv/bin/activate
 (venv)$ pip install -U pip setuptools
@@ -107,32 +111,19 @@ cuckoo 或 cuckoo -d
 # 查看帮助
 cuckoo --help
 ```
+3. 启动cuckoo  
 第一次启动cuckoo看到如下页面说明安装成功,版本是2.0.7,CWD目录为'home/mudou/.cuckoo'.
 
 * CWD的具体路径默认是在当前用户目录下 ~/.cuckoo.配置文件在$CWD/conf目录下,CWD的具体路径可更改。
 
-![](images/setup-ok.png)   
-第二次启动cuckoo,看到如下'报错'，是正常的因为我们还没有配置相关的文件。  
+![](images/setup-ok.png)     
+第二次启动看到如下报错：    
+![](images/wrong10.png)    
+进入到工作目录下修改配置文件cuckoo.conf:  
+![](images/wrong6.png)  
+第三次启动cuckoo,看到如下'报错'，是正常的因为我们还没有配置相关的文件。    
 ![](images/cuckoo-second.png) 
-3. 更改配置文件  
-修改cuckoo.conf
-```
-cd ~/.cuckoo/conf
-sudo vim cuckoo.conf
 
-# 确保以下内容:
-# This option defines which Machinery module you want Cuckoo to use to interact with your analysis machines. The value must be the name of the module without extension (e.g., virtualbox or vmware).
-[cuckoo]
-machinery = virtualbox
-```
-![](images/define-machinery.png)
-
-4.
-```
-# 开启mongodb
-sudo systemctl enable mongodb
-sudo systemctl start mongodb
-```
 ## 实验问题
 1. win10不可直接安装cuckoo  
 ![](images/wrong1.png)  
@@ -176,7 +167,7 @@ $ VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.25
 ```
 启动,出现报错'CuckooCriticalError: Please update your configuration.'：  
 ![](images/wrong7.png)
-但是出现这样的错误是因为此时还没有修改配置文件进行修改，并不是真的错。
+但是出现这样的错误是因为此时还没有修改配置文件进行修改，并不是真的错。   
 5. 一开始使用ubuntu16.04来做实验，之后更换了虚拟机，新的虚拟机安装ssh.(再写一遍加深记忆)  
 解决：```sudo apt-get install openssh-server``` 
 6. 运行cuckoo时，command not found报错  

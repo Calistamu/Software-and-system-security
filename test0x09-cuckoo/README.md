@@ -190,8 +190,79 @@ pre-up iptables-restore < /etc/iptables.rule
 /etc/network/interfaces设置如下图：  
 ![](images/portforward-3.png)  
 iptables规则设置以后，xp浏览器和终端都可上网；Ubuntu终端可上网，浏览器不可上网。
-![](images/portforward-2.png)
+![](images/portforward-2.png)  
+临时更改nameserver让Ubuntu能上网```sudo vim /etc/resolv.conf```，不可重启网络。  
+![](images/nameserver.png)
+* [nameserver永久解决办法参考一](https://www.helplib.com/ubuntu/article_162736)+[nameserver永久解决办法参考二](https://blog.csdn.net/weixin_33920401/article/details/87407103)
+```
+# 创建共享文件夹share
+cd /home/用户名/
+mkdir share
+cd share
+# 在share文件夹下，下载Python2安装包和PIL安装包,以及将agent.py拷贝到share文件夹下
+cp ~/.cuckoo/agent/agent.py /home/mudou/share
+wget https://www.python.org/ftp/python/2.7.13/python-2.7.13.msi
+wget http://effbot.org/media/downloads/PIL-1.1.7.win32-py2.7.exe
+```
+xp安装增强功能，并将share文件夹添加到共享文件夹中。  
+![](images/share.png)  
+重启后打开'我的电脑'，看到多了一个'网络驱动器'。点进去,先安装python2.7后安装PIL。   
+![](images/add-share.png)    
+[显示文件扩展名](https://blog.csdn.net/cduan/article/details/8802873),将agent.py后缀改成agent.pyw。将agent.pyw复制到C:\Python27\文件夹下，双击运行（是没有任何反应的）。  
+* C:\Python27\是安装python和PIL的默认文件夹
 
+![](images/show.png)  
+打开cmd，输入netstat -an，查看本地8000端口没有在监听  
+![](images/nolisten.png)  
+添加端口8000：开始---控制面板---网络和Internet连接---网络连接---本地连接属性---高级---设置---例外---添加端口  
+* [XP如何在防火墙中打开8000 8001这两个端口](https://answers.microsoft.com/zh-hans/ie/forum/ie7_6-windows_xp/xp如何在防火/9dd89f19-6e58-432c-a020-8304dd5cb611)  
+![](images/add-port.com)  
+xp增加快照。
+### cuckoo配置
+```
+cd ~/.cuckoo/conf
+# 在 .cuckoo/conf/中修改配置文件：
+
+
+# cuckoo.conf
+sudo vim cuckoo.conf
+machinery = virtualbox
+[resultserver]
+ip = 192.168.56.1 #This is the IP address of the host
+port = 2042 #leave default unless you have services running
+
+
+# auxiliary.conf
+# sudo vim auxiliary.conf
+[sniffer]
+# Enable or disable the use of an external sniffer (tcpdump) [yes/no].
+enabled = yes
+# Specify the path to your local installation of tcpdump. Make sure this
+# path is correct.
+tcpdump = /usr/sbin/tcpdump
+
+
+# virtualbox.conf
+sudo vim virtualbox.conf
+machines = 虚拟机名字
+label = 虚拟机名字
+platform = windows
+ip = 192.168.56.101 # IP address of the guest
+snapshot = 快照名字
+interface = vboxnet0
+
+# reporting.conf 
+sudo vim reporting.conf:
+[mongodb]
+enabled = yes
+# 也许还有其他要改的，但是这个最重要，其他是yes还是no更多的是看你的需要，或者之后在使用时再来配置文件里面打开
+```
+### 提交样本并分析
+```
+# 在安装tcpdump的时候就以及解决了权限问题，这里如果出现问题，再执行一遍
+sudo apt-get install apparmor-utils
+sudo aa-disable /usr/sbin/tcpdump
+```
 ## 实验问题
 1. win10不可直接安装cuckoo  
 ![](images/wrong1.png)  

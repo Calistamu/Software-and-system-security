@@ -91,7 +91,8 @@
 ```
 运行结果如下图：  
 ![](images/cmd.png)
-* 3) Host:配置windbg符号下载地址  
+* 3) Host:配置windbg符号下载地址 
+* [Microsoft public symbol server](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/microsoft-public-symbols)   
 ![](images/symbols-path.png)
 * 4) Host进入windbg.exe所在文件夹，以下命令启动windbg  
 ```windbg.exe -k com:port=\\.\pipe\com_1,baud=115200,pipe```  
@@ -103,6 +104,14 @@
 ![](images/cmd.jpg)  
 列出进程cmd.exe的详细信息，由于只有一个线程，查看该线程的信息。
 ![](images/view-process.png)
+5. 之后再重新添加文件符号路径出现了'pdb not found'报错。    
+解决：[参考](https://blog.csdn.net/xiangbaohui/article/details/103832850)    
+首先开启科学上网（使用了蓝灯），接着进入到windbg.exe的目录下，如图命令行输入命令：    
+![](images/windbg-set.png)  
+接着在windbg中如下设置后reload  
+![](images/symbols-reload.png)  
+查看相应的路径下看到符号文件下载成功。    
+![](images/symbol-ok.png)  
 ## 实验总结
 1. 内核模式与用户模式区别：
 内核模式没有用户模式的那么多限制，用户模式下运行的代码可以访问用户空间，但不能访问系统空间。 此限制可防止用户模式代码读取或更改受保护的操作系统数据结构。 内核模式下运行的代码既可以访问用户空间，也可以访问系统空间。内核模式下运行的代码可以访问系统空间和当前用户模式进程的虚拟地址空间。

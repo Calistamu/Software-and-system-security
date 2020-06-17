@@ -77,7 +77,7 @@ pip show pydeep
 volatility版本信息
 ![](images/volatility-ok.png)
 pydeep版本：  
-![](images/pyseep-version.png)  
+![](images/pydeep-version.png)  
 2. 安装cuckoo
 * 第一次直接安装很顺畅，第二次使用官网推荐的(可选但推荐就试了试)虚拟机内安装，安装后出现太多报错。无奈之后很多次报错，最后只好直接安装。
 * [KVM](https://help.ubuntu.com/community/KVM)

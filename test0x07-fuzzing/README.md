@@ -35,11 +35,48 @@ unsquashfs 190090.squashfs
 ```
 sudo apt-get install qemu 
 # 或sudo apt-get install qemu-user-static
-```
-![](images/qemu-ok.png)
-2. 进入squashfs-root目录，将将qemu-mipsel-static拷贝到当前目录下
-![](images/run-1.png)
+# install qemu
+sudo apt-get -y install qemu qemu-system qemu-user-static qemu-user
 
+# install build-essential
+sudo apt-get -y install build-essential
+
+# install radare
+git clone https://github.com/radare/radare2.git
+cd radare2/sys
+./install.sh 
+cd ..
+```
+qemua安装两次，第一次没有system mode,结果如下图。  
+![](images/qemu-ok.png)
+qemu第二次安装了system mode,结果如下图：   
+![](images/qemu-ok2.png)    
+build-essential安装版本如下图：    
+![](images/build-ok.png)     
+
+2.
+```
+ls -lF ./bin/ls
+# output:
+# lrwxrwxrwx 1 mudou mudou 7 6月  16 14:11 ./bin/ls -> busybox*
+rabin2 -I ./bin/busybox
+# output: arch mips
+rabin2 -l ./bin/busybox
+```
+使用rabin看到二进制结构是[mips](https://en.wikibooks.org/wiki/MIPS_Assembly/MIPS_Details)    
+![](images/mips.png)  
+依赖   
+![](images/libraries.png)  
+```
+# 将qemu-mips-static拷贝到squashfs-root文件夹下
+whereis  qemu-mips-static 
+cp  qemu-mips-static squashfs-root/ 
+```
+![](images/copy-qemutool.jpg)
+```
+cp /usr/bin/qemu-mips-static ./
+sudo chroot . ./qemu-mips-static ./bin/ls
+```
 ## 实验问题
 1. 固件提取第一次尝试结果
 * （没有错，但是不是官方的文件，总有些别扭，因此重新再来）  
@@ -72,6 +109,15 @@ unsquashfs 190090.squashfs提取结果如下图：
 * 此处的'create_inode: could not create character device squashfs-root/dev/XXX, because you're not superuser!'是正常的，因此需要特别的权限create device files，并不会影响本次实验.[could not create character device "foo" because you're not superuser!](https://github.com/devttys0/sasquatch/issues/14)  
 
 ![](images/ex-5.png)
+
+2. 第一次卡片被qemu tool时弄错了二进制结构  
+进入squashfs-root目录，将将qemu-mipsel-static拷贝到当前目录下  
+![](images/run-1.png)   
+总结：应该先查看类型再拷贝
+
+3. ```sudo chroot . ./qemu-mips-static ./bin/sh```开启模拟运行以后，报错'command not found'.  
+![](images/wrong1.png)
+
 ## 实验总结
 1. 路由器厂家学习
 * [全球最好的八大消费类路由器品牌商](https://tnext.org/3773.html)

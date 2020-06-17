@@ -23,6 +23,9 @@ sudo apt install binwalk
 ```
 ![](images/binwalk-ok.png)  
 3. 提取固件
+* M ，—matryoshka 递归扫描可解压的
+* e，—extract 提取
+* 解压到的是_XXXXXX.bin.extracted/
 ```
 binwalk -Me dir850l.bin
 unsquashfs 190090.squashfs
@@ -91,6 +94,16 @@ $ cp ./qemu-mips-static ./qemu
 ```
 再次运行```sudo chroot . ./qemu-mips-static ./bin/sh```成功  
 ![](images/chroot-ok.png)  
+
+* [Fuzzing Embedded Linux Devices](https://www.novetta.com/2018/07/fuzzing-embedded-linux-devices/)  
+* [Emulating Embedded Linux Devices with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-devices-with-qemu/)  
+* [Emulating Embedded Linux Systems with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-systems-with-qemu/)
+* [Dynamic Analysis of Firmware Using Firmadyne](https://opensourceforu.com/2018/09/dynamic-analysis-of-firmware-using-firmadyne/)  
+* [D-Link: A Firmware Security Analysis – Part 2](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-2/)
+* [D-Link: A Firmware Security Analysis – Part 3](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-3/)
+* [D-Link: A Firmware Security Analysis – Part 4](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-4/)
+* [Getting started with Firmware Emulation for IoT Devices](https://blog.attify.com/getting-started-with-firmware-emulation/)  
+
 ## 实验问题
 1. 固件提取第一次尝试结果
 * （没有错，但是不是官方的文件，总有些别扭，因此重新再来）  

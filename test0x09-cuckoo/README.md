@@ -3,9 +3,14 @@
 - [] 安装并使用cuckoo
 - [] 任意找一个程序，在cuckoo中trace获取软件行为的基本数据。
 ## 实验环境
+物理机：win10  
 host：ubuntu 18.04 LTS    
-guest: windows xp-sp3     
-两个主机都是双网卡：NAT+host-only(并且是同一个网络)   
+* 双网卡：NAT+HOST-ONLY(物理机与host连接)  
+
+guest: windows xp-professional    
+* 单网卡：host-only(host与guest连接)   
+
+* 使用了一个三层嵌套的配置，虽然guest用virtualbox直接创建，并设置为和Host同一个host-only也可以通信，但是这样不够安全。
 ## 实验步骤
 
 ### 宿主机HOST准备
@@ -123,6 +128,69 @@ cuckoo --help
 ![](images/wrong6.png)  
 第三次启动cuckoo,看到如下'报错'，是正常的因为我们还没有配置相关的文件。    
 ![](images/cuckoo-second.png) 
+### 客户机准备
+#### 安装虚拟机
+1. ubuntu内部安装virtualbox  
+```sudo apt-get install virtualbox```  
+
+2. 拷贝iso镜像到ubuntu中
+* 拷贝方法一：ubuntu安装增强功能将windows-xp镜像从物理机拖拽到Ubuntu中(镜像为：zh-hans_windows_xp_professional_with_service_pack_3_x86_cd_x14-80404.iso。之前就有，此处没给链接)
+* 拷贝方法二：scp
+
+
+3. 设置virtualbox
+virtualbox新建虚拟机  
+![](images/add-xp.png)
+virtualbox左上角file---host network manager中增加一个Host only网络并取消勾选enable dhcp server
+![](images/xp-hostonly.png)
+* 虚拟机增加host-only网段以后，看到ubuntu的网络确实有两个不同host-only的ipv4地址
+![](images/ubuntu-net.png) 
+
+4. 安装xp
+启动虚拟机并安装
+* 只有一块网卡host-only哟~
+* 在安装的时候不打开防火墙。安装完之后，xp系统右下角的那个红色盾牌，确保防火墙、自动更新、病毒保护这三项全部关掉，防火墙不关掉的话，在之后配置了端口转发后，Ubuntu无法ping通xp
+![](images/xp-nofirewall.png)
+
+安装好以后,xp没有ip地址，xp无上网，ubuntu与xp是无法ping通
+![](images/xp-nonet.jpg)
+
+5. xp本地网络设置
+网上邻居---查看本地连接---本地连接属性---常规---Internet协议（TCP/IP）---属性.具体设置如下图：  
+![](images/xp-netset.png)
+进行设置以后，xp与ubuntu能够ping通，xp无法上网
+![](images/xp-ok.jpg)  
+
+6. ubuntu-IP转发设置
+```
+# 开启IP转发
+sudo -i
+sysctl -w net.ipv4.ip_forward=1
+echo 1 > /proc/sys/net/ipv4/ip_forward
+#为使重启之后仍然有效
+sudo vim /etc/sysctl.conf
+# 去掉net.ipv4.ip_forward=1 前的#号，保存
+```
+/etc/sysctl.conf修改如下图  
+![](images/portforward-1.png)
+* [iptables](https://linux.die.net/man/8/iptables)
+```
+iptables -L
+配置Iptables的规则：
+# 看下有没有其他的防火墙规则，
+iptables -L
+iptables -A FORWARD -o eth0 -i vboxnet0 -s 192.168.56.0/24 -m conntrack --ctstate NEW -j ACCEPT
+iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+iptables -A POSTROUTING -t nat -j MASQUERADE
+# 接着为保证重启之后依然有效
+sudo vim /etc/network/interfaces
+# 在最后添加两行
+pre-up iptables-restore < /etc/iptables.rule
+```
+/etc/network/interfaces设置如下图：  
+![](images/portforward-3.png)  
+iptables规则设置以后，xp浏览器和终端都可上网；Ubuntu终端可上网，浏览器不可上网。
+![](images/portforward-2.png)
 
 ## 实验问题
 1. win10不可直接安装cuckoo  

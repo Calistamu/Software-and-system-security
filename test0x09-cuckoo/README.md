@@ -17,7 +17,7 @@ guest: windows xp-sp3
 * [guacamole/guacd](https://hub.docker.com/r/guacamole/guacd):guacd is the native server-side proxy used by the Apache Guacamole web application.
 * [pydeep](https://pydeep.readthedocs.io/en/latest/welcome.html):PyDeep is a machine learning / deep learning library with focus on unsupervised learning. 
 ```
-# install python libraries
+# 官网要求安装的依赖
 $ sudo apt-get install python python-pip python-dev libffi-dev libssl-dev
 $ sudo apt-get install python-virtualenv python-setuptools
 $ sudo apt-get install libjpeg-dev zlib1g-dev swig
@@ -25,7 +25,7 @@ $ sudo apt-get install mongodb
 $ sudo apt-get install postgresql libpq-dev
 $ sudo apt-get install qemu-kvm libvirt-bin ubuntu-vm-builder bridge-utils python-libvirt
 $ sudo pip install XenAPI
-# 以上步骤发现官方指南安装的依赖不够，所有本次实验要用的依赖：
+# 以上步骤发现官方指南安装的依赖不够，还需要本次实验要用的依赖：
 sudo apt-get install git mongodb libffi-dev build-essential python-django python python-dev python-pip python-pil python-sqlalchemy python-bson python-dpkt python-jinja2 python-magic python-pymongo python-gridfs python-libvirt python-bottle python-pefile python-chardet tcpdump -y
 
 # install virtual software
@@ -97,8 +97,13 @@ $ virtualenv venv
 $ . venv/bin/activate
 (venv)$ pip install -U pip setuptools
 (venv)$ pip install -U cuckoo
+
+# 如果不再虚拟环境下安装，使用如下命令安装
+pip install -U pip setuptools
+pip install -U cuckoo
+
 # 启动cuckoo
-cuckoo
+cuckoo 或 cuckoo -d
 # 查看帮助
 cuckoo --help
 ```
@@ -173,7 +178,10 @@ $ VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.25
 ![](images/wrong7.png)
 但是出现这样的错误是因为此时还没有修改配置文件进行修改，并不是真的错。
 5. 一开始使用ubuntu16.04来做实验，之后更换了虚拟机，新的虚拟机安装ssh.(再写一遍加深记忆)  
-解决：```sudo apt-get install openssh-server```  
+解决：```sudo apt-get install openssh-server``` 
+6. 运行cuckoo时，command not found报错  
+![](images/wrong9.png)  
+解决：如上图所示。执行```cp  /home/(username)/.local/bin/cuckoo  /usr/local/bin```以后再次运行，看到成功。
 ## 实验总结
 1. cuckoo configuration files
 * ~/.cuckoo/conf/

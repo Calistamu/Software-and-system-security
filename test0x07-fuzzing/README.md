@@ -28,6 +28,7 @@ binwalk -Me dir850l.bin
 unsquashfs 190090.squashfs
 ```
 ### 二、模拟运行固件
+* [Emulating Embedded Linux Devices with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-devices-with-qemu/)
 1. 安装qemu
 * [qume](https://qume.io/)和[qemu](https://www.qemu.org/)傻傻分不清
 * [Download QEMU](https://www.qemu.org/download/)
@@ -54,7 +55,7 @@ qemu第二次安装了system mode,结果如下图：
 build-essential安装版本如下图：    
 ![](images/build-ok.png)     
 
-2.
+2. 模拟运行环境搭建
 ```
 ls -lF ./bin/ls
 # output:
@@ -76,7 +77,20 @@ cp  qemu-mips-static squashfs-root/
 ```
 cp /usr/bin/qemu-mips-static ./
 sudo chroot . ./qemu-mips-static ./bin/ls
+ls
 ```
+* 会出现ls:not found的错误
+```
+$ exit
+$ sudo modprobe binfmt_misc
+$ sudo mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
+$ sudo -s
+# echo ':mips:M::\x7fELF\x01\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x08:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:/qemu:' > /proc/sys/fs/binfmt_misc/register
+# exit
+$ cp ./qemu-mips-static ./qemu
+```
+再次运行```sudo chroot . ./qemu-mips-static ./bin/sh```成功  
+![](images/chroot-ok.png)  
 ## 实验问题
 1. 固件提取第一次尝试结果
 * （没有错，但是不是官方的文件，总有些别扭，因此重新再来）  
@@ -117,7 +131,16 @@ unsquashfs 190090.squashfs提取结果如下图：
 
 3. ```sudo chroot . ./qemu-mips-static ./bin/sh```开启模拟运行以后，报错'command not found'.  
 ![](images/wrong1.png)
-
+解决：  
+```
+$ exit
+$ sudo modprobe binfmt_misc
+$ sudo mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
+$ sudo -s
+# echo ':mips:M::\x7fELF\x01\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x08:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:/qemu:' > /proc/sys/fs/binfmt_misc/register
+# exit
+$ cp ./qemu-mips-static ./qemu
+```
 ## 实验总结
 1. 路由器厂家学习
 * [全球最好的八大消费类路由器品牌商](https://tnext.org/3773.html)
@@ -163,10 +186,12 @@ system mode:qemu-system-mips(mipsel) : 用户可以为QEMU虚拟机指定运行�
 * [D-Link DIR-850L 固件下载-驱动天空](https://www.drvsky.com/dlink/DIR-850L.htm#download)
 * [D-LINK官网](https://support.dlink.com/ProductInfo.aspx?m=dir-850L)
 * [DIR-850L-D-Link Australia & New Zealand Support Resources](http://support.dlink.com.au/Download/download.aspx?product=DIR-850L)  
+6. 
 ## 参考文献
 [boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/)  
 [QEMU](https://www.qemu.org/)  
 [QEMU version 4.2.0 User Documentati](https://qemu.weilnetz.de/doc/qemu-doc.html)  
+
 [路由器漏洞分析系列（1）：路由器固件模拟环境搭建](https://xz.aliyun.com/t/5697)  
 [路由器漏洞挖掘之栈溢出入门（二）](https://juejin.im/entry/5c79430df265da2db5424f94)  
 [D-Link系列路由器漏洞挖掘入门](https://paper.seebug.org/429/)  

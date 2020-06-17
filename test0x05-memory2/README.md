@@ -104,6 +104,7 @@
 ![](images/cmd.jpg)  
 列出进程cmd.exe的详细信息，由于只有一个线程，查看该线程的信息。
 ![](images/view-process.png)
+
 5. 之后再重新添加文件符号路径出现了'pdb not found'报错。    
 解决：[参考](https://blog.csdn.net/xiangbaohui/article/details/103832850)    
 首先开启科学上网（使用了蓝灯），接着进入到windbg.exe的目录下，如图命令行输入命令：    

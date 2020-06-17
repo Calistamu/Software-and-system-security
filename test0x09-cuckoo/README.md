@@ -172,6 +172,8 @@ $ VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.25
 启动,出现报错'CuckooCriticalError: Please update your configuration.'：  
 ![](images/wrong7.png)
 但是出现这样的错误是因为此时还没有修改配置文件进行修改，并不是真的错。
+5. 一开始使用ubuntu16.04来做实验，之后更换了虚拟机，新的虚拟机安装ssh.(再写一遍加深记忆)  
+解决：```sudo apt-get install openssh-server```  
 ## 实验总结
 1. cuckoo configuration files
 * ~/.cuckoo/conf/

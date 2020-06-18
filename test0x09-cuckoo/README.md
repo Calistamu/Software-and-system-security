@@ -143,7 +143,7 @@ virtualbox新建虚拟机
 ![](images/add-xp.png)
 virtualbox左上角file---host network manager中增加一个Host only网络并取消勾选enable dhcp server
 ![](images/xp-hostonly.png)
-* 虚拟机增加host-only网段以后，看到ubuntu的网络确实有两个不同host-only的ipv4地址
+* 虚拟机增加host-only网段以后，看到ubuntu的网络确实有两个不同host-only的ipv4地址。并且vboxnet0只有当ubuntu内xp启动后才会增加。  
 ![](images/ubuntu-net.png) 
 
 4. 安装xp
@@ -335,8 +335,12 @@ $ VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.25
 解决：如上图所示。执行```cp  /home/(username)/.local/bin/cuckoo  /usr/local/bin```以后再次运行，看到成功。
 
 7. 更改配置后运行cuckoo -d出现报错  
-![](images/file-limit.png)   
-解决：
+* 前两个报错在解决8以后进行了解决  
+
+![](images/file-limit.png)    
+问题8解决以后的报错信息：'CuckooStartupError: You have filled out the Cuckoo Feedback configuration, but there's an error in it: Missing contact name'.  
+![](images/file-limit-solved.png)   
+解决：  
 
 8. xp运行状态下，ubuntu突然重启后，再次运行xp，出现两个弹窗的报错。
 ![](images/vm-wrong2.png)      

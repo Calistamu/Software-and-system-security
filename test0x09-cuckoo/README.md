@@ -1,7 +1,7 @@
 # cuckoo
 ## 实验要求
-- [] 安装并使用cuckoo
-- [] 任意找一个程序，在cuckoo中trace获取软件行为的基本数据。
+- [x] 安装并使用cuckoo
+- [x] 任意找一个程序，在cuckoo中trace获取软件行为的基本数据。
 ## 实验环境
 物理机：win10  
 host：ubuntu 18.04 LTS    
@@ -213,10 +213,10 @@ xp安装增强功能，并将share文件夹添加到共享文件夹中。
 
 ![](images/show.png)  
 打开cmd，输入netstat -an，查看本地8000端口没有在监听  
-![](images/nolisten.png)  
-添加端口8000：开始---控制面板---网络和Internet连接---网络连接---本地连接属性---高级---设置---例外---添加端口  
-* [XP如何在防火墙中打开8000 8001这两个端口](https://answers.microsoft.com/zh-hans/ie/forum/ie7_6-windows_xp/xp如何在防火/9dd89f19-6e58-432c-a020-8304dd5cb611)  
-![](images/add-port.com)  
+* 8000必须要在监听状态下，之后的样本分析才能连接成功
+
+![](images/port-start.png)
+
 xp增加快照。
 ### cuckoo配置
 ```
@@ -294,8 +294,17 @@ cuckoo浏览器访问成功页面：
 ![](images/cuckoo-web-ok.png)  
 
 ### 恶意分析并提交样本
+1. 下载病毒样本到Ubunutu中，解压缩得到.exe文件
+* [Enternal blue下载](https://bbs.pediy.com/thread-217586.htm)
+2. 访问浏览器，提交样本并分析  
+![](images/add-sample.png)  
+3. 看到分析结果  
+![](images/result-1.png)
+![](images/result-2.png)
 
-
+再次启动xp系统,看到被Enternal blue攻击过的xp
+* 记得用快照恢复~第一次就忘了，又重新安装一遍:sob:
+![](images/result-3.png)
 ## 实验问题
 1. win10不可直接安装cuckoo  
 ![](images/wrong1.png)  
@@ -378,8 +387,19 @@ sudo apt install virtualbox-dkms
 ![](images/runwrong.png) 
 解决：参考[cannot resume saved virtualbox state](https://stackoverflow.com/questions/46775652/cannot-resume-saved-virtualbox-state)，点击上方的'Discard'删除虚拟机保存的状态，再启动。     
 ![](images/runwrong.png)
-10. 提交了样本以后出现了报错,样本分析后的结果0.0，提示也是没有连接上。       
-![](images/wrong11.jpg)  
+10. 提交了样本以后出现了报错,样本分析后的结果0.0，浏览器分析结果提示也是没有连接上。       
+![](images/wrong11.jpg)    
+![](images/wrong12.png)  
+![](images/wrong13.png)
+解决：删除原有的快照，运行agent.py，打开命令行，确认8000端口是监听状态后快照，关闭虚拟机，再次运行cuckoo，添加样本分析。
+
+* 根据错误信息提示，反思回想自己的操作，想到agent.py没有开，而且又提示试图打开已经拆开的vm。因此想到第一次的操作(同时是问题11)忘了运行agent.py,看到8000端口没有开启，还以为是8000需要添加端口。
+
+11. xp的8000端口没有在监听状态下  
+![](images/nolisten.png)  
+添加端口8000：开始---控制面板---网络和Internet连接---网络连接---本地连接属性---高级---设置---例外---添加端口  
+* [XP如何在防火墙中打开8000 8001这两个端口](https://answers.microsoft.com/zh-hans/ie/forum/ie7_6-windows_xp/xp如何在防火/9dd89f19-6e58-432c-a020-8304dd5cb611)  
+![](images/add-port.com)  
 ## 实验总结
 1. cuckoo configuration files
 * ~/.cuckoo/conf/
@@ -391,6 +411,24 @@ sudo apt install virtualbox-dkms
 * reporting.conf: for enabling or disabling report formats.
 
 * To get Cuckoo working you should at the very least edit cuckoo.conf and <machinery>.conf.
+
+2. 端口  
+
+根据端口号的数字对端口分类：
+* Well Known Ports: those from 0 through 1023.
+* Registered Ports: those from 1024 through 49151
+* Dynamic and/or Private Ports: those from 49152 through 65535  
+
+well-known port numbers:
+21: FTP Server
+22: SSH Server (remote login)
+25: SMTP (mail server)
+53: Domain Name System (Bind 9 server)
+80: World Wide Web (HTTPD server)
+110: POP3 mail server
+143: IMAP mail server
+443: HTTP over Transport Layer Security/Secure Sockets Layer (HTTPDS server)
+445: microsoft-ds, Server Message Block over TCP
 ## 参考文献
 [cuckoosandbox](https://cuckoosandbox.org/)  
 [Introduction](https://cuckoo.readthedocs.io/en/latest/introduction/)  

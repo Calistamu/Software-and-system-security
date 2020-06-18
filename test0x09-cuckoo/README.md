@@ -245,6 +245,8 @@ tcpdump = /usr/sbin/tcpdump
 # virtualbox.conf
 sudo vim virtualbox.conf
 machines = 虚拟机名字
+
+[虚拟机名字]
 label = 虚拟机名字
 platform = windows
 ip = 192.168.56.101 # IP address of the guest
@@ -257,7 +259,12 @@ sudo vim reporting.conf:
 enabled = yes
 # 也许还有其他要改的，但是这个最重要，其他是yes还是no更多的是看你的需要，或者之后在使用时再来配置文件里面打开
 ```
-### 提交样本并分析
+* 配置的时候一定要看清楚
+
+virtualbox.conf的完整配置如下图：  
+![](images/reporting-conf.png)
+
+### 启动cuckoo
 1. 避免一些报错的必要设置
 ```
 # 在安装tcpdump的时候就以及解决了权限问题，这里如果出现报错'Unable to stop auxiliary module: Sniffer'，再执行一遍
@@ -280,7 +287,14 @@ sudo vim recentfiles.py
 recentfiles.py更改如下图：  
 ![](images/neglect.png) 
 2.  运行cuckoo  
-打开两个终端，一个先输入cuckoo -d，另一个再输入cuckoo web runserver，接着用浏览器打开127.0.0.1:8000登录到cuckoo的web服务页面。  
+打开两个终端，一个先输入cuckoo -d，另一个再输入cuckoo web runserver，接着用浏览器打开127.0.0.1:8000登录到cuckoo的web服务页面。   
+* cuckoo命令行运行成功页面：  
+![](images/cuckoo-ok.png)  
+cuckoo浏览器访问成功页面：  
+![](images/cuckoo-web-ok.png)  
+
+### 恶意分析并提交样本
+
 
 ## 实验问题
 1. win10不可直接安装cuckoo  
@@ -340,7 +354,16 @@ $ VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.25
 ![](images/file-limit.png)    
 问题8解决以后的报错信息：'CuckooStartupError: You have filled out the Cuckoo Feedback configuration, but there's an error in it: Missing contact name'.  
 ![](images/file-limit-solved.png)   
-解决：  
+解决：根据错误提示信息，说明是配置出了问题，就将配置过的文件都重新仔细地对照一遍配置，发现是自己粗心少配且配错了。  
+我的错误配置：  
+reporting.conf错误配置：      
+![](images/feedback-1.png)  
+reporting.conf配置更正：  
+![](images/feedback-2.png)    
+virtualbox.conf错误配置:  
+![](images/feedback-3.jpg)  
+virtualbox.conf更正配置后完整配置:  
+![](images/feedback-4.png)   
 
 8. xp运行状态下，ubuntu突然重启后，再次运行xp，出现两个弹窗的报错。
 ![](images/vm-wrong2.png)      
@@ -350,6 +373,11 @@ $ VBoxManage hostonlyif ipconfig vboxnet0 --ip 192.168.56.1 --netmask 255.255.25
 sudo apt upgrade
 sudo apt install virtualbox-dkms
 ```
+
+9. xp运行报错'VERR_SSM_LOAD_CPUID_MISMATCH'    
+![](images/runwrong.png) 
+解决：参考[cannot resume saved virtualbox state](https://stackoverflow.com/questions/46775652/cannot-resume-saved-virtualbox-state)，点击上方的'Discard'删除虚拟机保存的状态，再启动。     
+![](images/runwrong.png)
 ## 实验总结
 1. cuckoo configuration files
 * ~/.cuckoo/conf/

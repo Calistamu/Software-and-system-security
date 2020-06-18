@@ -14,14 +14,14 @@ guest: windows xp-professional
 ## 实验步骤
 
 ### 宿主机HOST准备
-#### 一、 安装cuckoo  
+#### 安装cuckoo  
 1. 安装依赖
 * 本次实验安装了:所有相关的python libraries,virtualbox,tcpdump,M2Crypto,guacd.没有安装Volatility
 * [Volatility](https://github.com/volatilityfoundation):内存取证工具,结合cuckoo,分析更深度与全面，可以防止恶意软件利用rookit技术逃逸沙箱。要根据python的版本进行选择安装。
 * [M2Crypto](https://pypi.org/project/M2Crypto/)
 * [guacamole/guacd](https://hub.docker.com/r/guacamole/guacd):guacd is the native server-side proxy used by the Apache Guacamole web application.
 * [pydeep](https://pydeep.readthedocs.io/en/latest/welcome.html):PyDeep is a machine learning / deep learning library with focus on unsupervised learning. 
-* [virtuaenv](https://pan.baidu.com/s/1Zf7xJSG4WFmPKXEdt1rguQ):A tool for creating isolated virtual python environments.
+* [virtualenv](https://pan.baidu.com/s/1Zf7xJSG4WFmPKXEdt1rguQ):A tool for creating isolated virtual python environments.
 ```
 # 官网要求安装的依赖
 $ sudo apt-get install python python-pip python-dev libffi-dev libssl-dev
@@ -81,9 +81,9 @@ ssdeep -V
 pip show pydeep  
 # output:2.13
 ```
-volatility版本信息
+* volatility版本信息：
 ![](images/volatility-ok.png)
-pydeep版本：  
+* pydeep版本信息：  
 ![](images/pydeep-version.png)  
 2. 安装cuckoo
 * 第一次直接安装很顺畅，第二次使用官网推荐的(可选但推荐就试了试)虚拟机内安装，安装后出现太多报错。无奈之后很多次报错，最后只好直接安装。
@@ -93,6 +93,7 @@ pydeep版本：
 # 如果没有安装依赖，安装以下依赖
 sudo apt-get install libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk
 
+# 本次实验没有增加新的用户，跳过此步
 # add user
 $ sudo adduser cuckoo
 # If you’re using VirtualBox, make sure the new user belongs to the “vboxusers” group (or the group you used to run VirtualBox):
@@ -100,7 +101,7 @@ $ sudo usermod -a -G vboxusers cuckoo
 #If you’re using KVM or any other libvirt based module, make sure the new user belongs to the “libvirtd” group (or the group your Linux distribution uses to run libvirt):
 $ sudo usermod -a -G libvirtd cuckoo
 
-# 本次实验没有使用virtualenv
+# 本次实验没有使用virtualenv，跳过此步
 # install cuckoo 
 $ virtualenv venv
 $ . venv/bin/activate
@@ -122,12 +123,14 @@ cuckoo --help
 * CWD的具体路径默认是在当前用户目录下 ~/.cuckoo.配置文件在$CWD/conf目录下,CWD的具体路径可更改。
 
 ![](images/setup-ok.png)     
-第二次启动看到如下报错：    
+第二次启动看到如下报错：      
 ![](images/wrong10.png)    
-进入到工作目录下修改配置文件cuckoo.conf:  
+进入到工作目录下修改配置文件cuckoo.conf:    
 ![](images/wrong6.png)  
+设置ignore_vulnerabilities = yes    
+![](images/wrong5.png) 
 第三次启动cuckoo,看到如下'报错'，是正常的因为我们还没有配置相关的文件。    
-![](images/cuckoo-second.png) 
+![](images/cuckoo-second.png)   
 ### 客户机准备
 #### 安装虚拟机
 1. ubuntu内部安装virtualbox  
@@ -170,9 +173,11 @@ echo 1 > /proc/sys/net/ipv4/ip_forward
 #为使重启之后仍然有效
 sudo vim /etc/sysctl.conf
 # 去掉net.ipv4.ip_forward=1 前的#号，保存
+sysctl -p /etc/sysctl.conf
 ```
 /etc/sysctl.conf修改如下图  
 ![](images/portforward-1.png)
+
 * [iptables](https://linux.die.net/man/8/iptables)
 ```
 iptables -L
@@ -183,9 +188,11 @@ iptables -A FORWARD -o eth0 -i vboxnet0 -s 192.168.56.0/24 -m conntrack --ctstat
 iptables -A FORWARD -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
 iptables -A POSTROUTING -t nat -j MASQUERADE
 # 接着为保证重启之后依然有效
-sudo vim /etc/network/interfaces
-# 在最后添加两行
-pre-up iptables-restore < /etc/iptables.rule
+
+
+#在最后添加两行
+pre-up iptables-restore < /etc/iptables.rules 
+post-down iptables-save > /etc/iptables.rules
 ```
 /etc/network/interfaces设置如下图：  
 ![](images/portforward-3.png)  
@@ -204,7 +211,7 @@ cp ~/.cuckoo/agent/agent.py /home/mudou/share
 wget https://www.python.org/ftp/python/2.7.13/python-2.7.13.msi
 wget http://effbot.org/media/downloads/PIL-1.1.7.win32-py2.7.exe
 ```
-xp安装增强功能，并将share文件夹添加到共享文件夹中。  
+xp安装增强功能w'ge'r，并将share文件夹添加到共享文件夹中。  
 ![](images/share.png)  
 重启后打开'我的电脑'，看到多了一个'网络驱动器'。点进去,先安装python2.7后安装PIL。   
 ![](images/add-share.png)    
@@ -299,12 +306,22 @@ cuckoo浏览器访问成功页面：
 2. 访问浏览器，提交样本并分析  
 ![](images/add-sample.png)  
 3. 看到分析结果  
-![](images/result-1.png)
-![](images/result-2.png)
+![](images/result-1.png)  
+![](images/result-2.jpg)  
+分析的screenshots比较清晰的截图,虽然很小，但是可以看到多了文件    
+![](images/result-4.png)  
+* 第二次成功实验时的screenshots  
+![](images/result-5.jpg)  
 
 再次启动xp系统,看到被Enternal blue攻击过的xp
 * 记得用快照恢复~第一次就忘了，又重新安装一遍:sob:
+
 ![](images/result-3.png)
+由于永恒之蓝最明显就是通过445来上传文件，查看命令行，445端口确实是监听状态。   
+![](images/result-7.png)  
+ubuntu端运行了cuckoo -d的终端也记录了样本上传文件的行为  
+![](images/result-6.png) 
+实验就到此结束啦！！！完结！撒花！:tada::tada::tada:
 ## 实验问题
 1. win10不可直接安装cuckoo  
 ![](images/wrong1.png)  

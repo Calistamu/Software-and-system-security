@@ -378,6 +378,8 @@ sudo apt install virtualbox-dkms
 ![](images/runwrong.png) 
 解决：参考[cannot resume saved virtualbox state](https://stackoverflow.com/questions/46775652/cannot-resume-saved-virtualbox-state)，点击上方的'Discard'删除虚拟机保存的状态，再启动。     
 ![](images/runwrong.png)
+10. 提交了样本以后出现了报错,样本分析后的结果0.0，提示也是没有连接上。       
+![](images/wrong11.jpg)  
 ## 实验总结
 1. cuckoo configuration files
 * ~/.cuckoo/conf/

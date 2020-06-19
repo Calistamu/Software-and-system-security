@@ -331,6 +331,9 @@ ubuntu端运行了cuckoo -d的终端也记录了样本上传文件的行为
 * 想要上交抓的包，但是太大了无法上传~
 
 实验就到此结束啦！！！完结！撒花！:tada::tada::tada:
+## 实验视频
+[在线视频](https://www.bilibili.com/video/BV1Zp4y1D78J)
+* 视频太大，Github上没有上传~
 ## 实验问题
 1. win10不可直接安装cuckoo  
 ![](images/wrong1.png)  

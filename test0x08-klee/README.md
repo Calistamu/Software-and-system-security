@@ -65,9 +65,8 @@ $ docker build -t klee/klee
 docker run --rm -ti --ulimit='stack=-1:-1' klee/klee
 ```
 klee版本信息如下图：  
-![](images/klee-version.png) 
-clang版本信息如下图：  
-![](images/clang-version.png) 
+![](images/klee-version.png)
+
 ```
 # Persistent Containers
 docker run -ti --name=my_first_klee_container --ulimit='stack=-1:-1' klee/klee

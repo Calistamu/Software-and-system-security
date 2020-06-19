@@ -104,6 +104,7 @@ ld.exe -o winexec.exe exec.obj
 ##### 实验环境
 虚拟机：win7 professional 64位  
 物理机：win10
+
 ##### 实验步骤
 1. 使用以下命令，在vs命令符中进行编译链接  
 ```
@@ -113,7 +114,8 @@ link /subsystem:windows /section:.text,w wexec2.obj
 2. 得到wexec2.exe拖入win7系统中运行
 ##### 实验效果
 效果不是很明显，但是看到鼠标旁边的小圈圈转动了，然后又不转了，说明显示运行了程序，然后又结束了线程。
-![](video/win7-64-shellcode.gif)
+![](video/win7-x64-shellcode.gif)
+
 ##### shellcode解读
 这个示例是使用一个个小函数来实现功能的，从函数的名称能大概理解功能。  
 ![](images/4-1.png)

@@ -29,7 +29,7 @@ create table studentsinfo(course_id INTEGER,student_id INTEGER,grades INTEGER);
 
 >video/web-my.mp4是完整的我的实验过程
 
-[我的实验演示在线视频](https://www.bilibili.com/video/BV1aQ4y1P7GE)
+[我的实验演示在线视频](https://www.bilibili.com/video/BV1aQ4y1P7GE/)
 
 * gif展示的效果不清晰，因此mp4文件保留  
 ![](video/效果演示.gif)

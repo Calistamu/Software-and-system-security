@@ -5,6 +5,7 @@
 - [] 如果能下载对应版本的固件，在QEMU中模拟运行。确定攻击面（对哪个端口那个协议进行Fuzzing测试），尽可能多的抓取攻击面正常的数据包（wireshark）
 - [] 查阅BooFuzz的文档，编写这对这个攻击面，这个协议的脚本，进行Fuzzing。配置BooFuzz QEMU的崩溃异常检测，争取触发一次固件崩溃，获得崩溃相关的输入测试样本和日志。尝试使用调试器和IDA-pro监视目标程序的崩溃过程，分析原理。
 ## 实验环境
+ubuntu-16.04-desktop
 ## 实验步骤
 ### 一、固件下载并提取
 1. 固件准备。  
@@ -32,6 +33,17 @@ unsquashfs 190090.squashfs
 ```
 ### 二、模拟运行固件
 * [Emulating Embedded Linux Devices with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-devices-with-qemu/)
+* [QEMU System Emulation User’s Guide](https://www.qemu.org/docs/master/system/index.html)
+
+* [Fuzzing Embedded Linux Devices](https://www.novetta.com/2018/07/fuzzing-embedded-linux-devices/)  
+* [Emulating Embedded Linux Devices with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-devices-with-qemu/)  
+* [Emulating Embedded Linux Systems with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-systems-with-qemu/)
+* [Dynamic Analysis of Firmware Using Firmadyne](https://opensourceforu.com/2018/09/dynamic-analysis-of-firmware-using-firmadyne/)  
+* [D-Link: A Firmware Security Analysis – Part 2](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-2/)
+* [D-Link: A Firmware Security Analysis – Part 3](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-3/)
+* [D-Link: A Firmware Security Analysis – Part 4](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-4/)
+* [Getting started with Firmware Emulation for IoT Devices](https://blog.attify.com/getting-started-with-firmware-emulation/) 
+* [DLink RCE 漏洞 CVE-2019-17621 分析](https://www.geekmeta.com/article/1292672.html)  
 1. 安装qemu
 * [qume](https://qume.io/)和[qemu](https://www.qemu.org/)傻傻分不清
 * [Download QEMU](https://www.qemu.org/download/)
@@ -50,15 +62,21 @@ git clone https://github.com/radare/radare2.git
 cd radare2/sys
 ./install.sh 
 cd ..
+
+# 查看当前版本 
+qemu-img --version
 ```
-qemua安装两次，第一次没有system mode,结果如下图。  
+qemu版本信息  
+![](images/qemu-version.png)  
+qemu安装两次，第一次没有system mode,结果如下图。  
 ![](images/qemu-ok.png)
 qemu第二次安装了system mode,结果如下图：   
 ![](images/qemu-ok2.png)    
 build-essential安装版本如下图：    
 ![](images/build-ok.png)     
 
-2. 模拟运行环境搭建
+2. 查看ELF文件格式，拷贝相应的qemu程式
+查看方法一：使用rabin2
 ```
 ls -lF ./bin/ls
 # output:
@@ -67,12 +85,23 @@ rabin2 -I ./bin/busybox
 # output: arch mips
 rabin2 -l ./bin/busybox
 ```
-使用rabin看到二进制结构是[mips](https://en.wikibooks.org/wiki/MIPS_Assembly/MIPS_Details)    
+使用rabin看到二进制结构是[mips](https://en.wikibooks.org/wiki/MIPS_Assembly/MIPS_Details)
+* [rabin](http://www.linuxcertif.com/man/1/rabin/) - Binary program info extractor 
+* [MIPSPort](https://wiki.debian.org/MIPSPort):Through the Debian 10 ("buster") release, Debian currently provides 3 ports, 'mips', 'mipsel', and 'mips64el'. The 'mips' and 'mipsel' ports are respectively big and little endian variants, using the O32 ABI with hardware floating point. They use the MIPS II ISA in Jessie and the MIPS32R2 ISA in Stretch and later. The 'mips64el' port is a 64-bit little endian port using the N64 ABI, hardware floating point and the MIPS64R2 ISA.   
+总结：   
+mips 是32位大端字节序   
+mipsel 是32位小端字节序   
+mips64el 是64位小端字节序   
+
 ![](images/mips.png)  
 依赖   
 ![](images/libraries.png)  
+查看方法二：使用file
+使用file得到更多详细信息  
+![](images/file-type.png)
+根据ELF文件格式，使用相应的qemu程式模拟。
 ```
-# 将qemu-mips-static拷贝到squashfs-root文件夹下
+# 由于使用的是mips,查找qemu-mips-static,将qemu-mips-static拷贝到squashfs-root文件夹下
 whereis  qemu-mips-static 
 cp  qemu-mips-static squashfs-root/ 
 ```
@@ -92,17 +121,20 @@ $ sudo -s
 # exit
 $ cp ./qemu-mips-static ./qemu
 ```
-再次运行```sudo chroot . ./qemu-mips-static ./bin/sh```成功  
+再次运行```sudo chroot . ./qemu-mips-static ./bin/sh```成功，说明qemu可以正常使用了。    
 ![](images/chroot-ok.png)  
 
-* [Fuzzing Embedded Linux Devices](https://www.novetta.com/2018/07/fuzzing-embedded-linux-devices/)  
-* [Emulating Embedded Linux Devices with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-devices-with-qemu/)  
-* [Emulating Embedded Linux Systems with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-systems-with-qemu/)
-* [Dynamic Analysis of Firmware Using Firmadyne](https://opensourceforu.com/2018/09/dynamic-analysis-of-firmware-using-firmadyne/)  
-* [D-Link: A Firmware Security Analysis – Part 2](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-2/)
-* [D-Link: A Firmware Security Analysis – Part 3](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-3/)
-* [D-Link: A Firmware Security Analysis – Part 4](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-4/)
-* [Getting started with Firmware Emulation for IoT Devices](https://blog.attify.com/getting-started-with-firmware-emulation/)  
+### 固件模拟运行
+
+1. 安装下载[Firmware Analysis Toolkit](https://github.com/attify/firmware-analysis-toolkit):FIRMADYNE is an automated and scalable system for performing emulation and dynamic analysis of Linux-based embedded firmware.
+```
+To install just clone the repository and run the script ./setup.sh.
+
+git clone https://github.com/attify/firmware-analysis-toolkit
+cd firmware-analysis-toolkit
+./setup.sh
+
+```
 
 ## 实验问题
 1. 固件提取第一次尝试结果
@@ -199,17 +231,28 @@ system mode:qemu-system-mips(mipsel) : 用户可以为QEMU虚拟机指定运行�
 * [D-Link DIR-850L 固件下载-驱动天空](https://www.drvsky.com/dlink/DIR-850L.htm#download)
 * [D-LINK官网](https://support.dlink.com/ProductInfo.aspx?m=dir-850L)
 * [DIR-850L-D-Link Australia & New Zealand Support Resources](http://support.dlink.com.au/Download/download.aspx?product=DIR-850L)  
-6. 
+
+6. [firmdayne](https://github.com/firmadyne/firmadyne) includes the following components:
+* modified kernels (MIPS: v2.6.32, ARM: v4.1, v3.10) for instrumentation of firmware execution;
+* a userspace NVRAM library to emulate a hardware NVRAM peripheral;
+* an extractor to extract a filesystem and kernel from downloaded firmware;
+* a small console application to spawn an additional shell for debugging;
+* and a scraper to download firmware from 42+ different vendors.
+
+7. 固件模拟运行由两种方式：  
+① 将文件系统上传到 qemu mips 虚拟机中运行；  
+② 借助 firmadyne 工具运行固件
+
 ## 参考文献
 [boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/)  
 [QEMU](https://www.qemu.org/)  
 [QEMU version 4.2.0 User Documentati](https://qemu.weilnetz.de/doc/qemu-doc.html)  
+[QEMU System Emulator Targets](https://www.qemu.org/docs/master/system/targets.html)
 
 [路由器漏洞分析系列（1）：路由器固件模拟环境搭建](https://xz.aliyun.com/t/5697)  
-[路由器漏洞挖掘之栈溢出入门（二）](https://juejin.im/entry/5c79430df265da2db5424f94)  
-[D-Link系列路由器漏洞挖掘入门](https://paper.seebug.org/429/)  
-[利用DVRF学习固件分析系列（一）](https://www.anquanke.com/post/id/84580)  
-[D-Link DIR-850L路由器分析之获取设备shell](https://cq674350529.github.io/2019/03/18/D-Link-DIR-850L%E8%B7%AF%E7%94%B1%E5%99%A8%E5%88%86%E6%9E%90%E4%B9%8B%E8%8E%B7%E5%8F%96%E8%AE%BE%E5%A4%87shell/)  
 [D-Link 850L&645路由漏洞分析](https://xz.aliyun.com/t/2941)    
-[dir815_FW_102.bin路由器固件解压碰到的坑](https://www.jianshu.com/p/29c99274ff85)  
-[DLink路由器固件的一次分析记录](https://bbs.pediy.com/thread-209773.htm)
+
+漏洞分析：  
+[路由器漏洞复现分析第二弹：CNVD-2018-01084 ](https://www.freebuf.com/vuls/162627.html)  
+[D-Link系列路由器漏洞挖掘入门](https://paper.seebug.org/429/)  
+ 

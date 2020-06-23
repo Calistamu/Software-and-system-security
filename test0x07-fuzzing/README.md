@@ -123,10 +123,12 @@ $ cp ./qemu-mips-static ./qemu
 ```
 再次运行```sudo chroot . ./qemu-mips-static ./bin/sh```成功，说明qemu可以正常使用了。    
 ![](images/chroot-ok.png)  
+### build mips image on qemu
+* [How to build a Debian MIPS image on QEMU](https://markuta.com/how-to-build-a-mips-qemu-image-on-debian/)  
 
 ### 固件模拟运行
 
-1. 安装下载[Firmware Analysis Toolkit](https://github.com/attify/firmware-analysis-toolkit):FIRMADYNE is an automated and scalable system for performing emulation and dynamic analysis of Linux-based embedded firmware.
+1. 安装下载FAT-[Firmware Analysis Toolkit](https://github.com/attify/firmware-analysis-toolkit):FIRMADYNE is an automated and scalable system for performing emulation and dynamic analysis of Linux-based embedded firmware.
 ```
 To install just clone the repository and run the script ./setup.sh.
 
@@ -134,8 +136,21 @@ git clone https://github.com/attify/firmware-analysis-toolkit
 cd firmware-analysis-toolkit
 ./setup.sh
 
+sudo vim fat.config
+# edit as follows:
+[DEFAULT]
+sudo_password=attify123 # sudo password
+firmadyne_path=/home/attify/firmadyne # address of firmadyne
 ```
 
+安装[firmadyne](https://github.com/firmadyne/firmadyne)   
+
+
+### 确定攻击面
+boofuzz
+```
+pip install boofuzz
+```
 ## 实验问题
 1. 固件提取第一次尝试结果
 * （没有错，但是不是官方的文件，总有些别扭，因此重新再来）  

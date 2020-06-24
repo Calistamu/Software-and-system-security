@@ -65,9 +65,7 @@ cd ..
 
 # 查看当前版本 
 qemu-img --version
-```
-qemu版本信息  
-![](images/qemu-version.png)  
+```  
 qemu安装两次，第一次没有system mode,结果如下图。  
 ![](images/qemu-ok.png)
 qemu第二次安装了system mode,结果如下图：   
@@ -122,12 +120,61 @@ $ sudo -s
 $ cp ./qemu-mips-static ./qemu
 ```
 再次运行```sudo chroot . ./qemu-mips-static ./bin/sh```成功，说明qemu可以正常使用了。    
-![](images/chroot-ok.png)  
-### build mips image on qemu
+![](images/chroot-ok.png) 
+
+### qemu安装mips虚拟机
+* []()
 * [How to build a Debian MIPS image on QEMU](https://markuta.com/how-to-build-a-mips-qemu-image-on-debian/)  
+1. 查看qemu版本信息```qemu-img --version```  
+![](images/qemu-version.png)
+2. 下载[debian_squeeze_mips_standard.qcow2和vmlinux-2.6.32-5-4kc-malta](https://people.debian.org/~aurel32/qemu/mips/),使用scp拷贝到虚拟机中。  
+*   - Keyboard:       US
+  - Locale:         en_US
+  - Mirror:         ftp.debian.org
+  - Hostname:       debian-mips
+  - Root password:  root
+  - User account:   user
+  - User password:  user
+3. 
+```
+# 安装依赖
+sudo apt-get install bridge-utils uml-utilities
 
+# 修改ubuntu主机网络配置
+sudo vim /etc/network/interfaces
+# change as follows:
+auto lo
+iface lo inet loopback
+ 
+# ubuntu 16.04的系统用ens33代替eth0
+auto ens33
+iface ens33 inet manual
+up ifconfig ens33 0.0.0.0 up
+ 
+auto br0
+iface br0 inet dhcp
+bridge_ports ens33
+bridge_stp off
+bridge_maxwait 1
+
+
+# 修改QEMU的网络接口启动脚本，重启网络使配置生效
+sudo vim /etc/qemu-ifup
+# as follows:
+#!/bin/sh
+echo "Executing /etc/qemu-ifup"
+echo "Bringing $1 for bridged mode..."
+sudo /sbin/ifconfig $1 0.0.0.0 promisc up
+echo "Adding $1 to br0..."
+sudo /sbin/brctl addif br0 $1
+sleep 3
+
+```
 ### 固件模拟运行
-
+2. 
+```
+sudo apt-get install bridge-utils uml-utilities
+```
 1. 安装下载FAT-[Firmware Analysis Toolkit](https://github.com/attify/firmware-analysis-toolkit):FIRMADYNE is an automated and scalable system for performing emulation and dynamic analysis of Linux-based embedded firmware.
 ```
 To install just clone the repository and run the script ./setup.sh.
@@ -151,6 +198,9 @@ boofuzz
 ```
 pip install boofuzz
 ```
+
+
+
 ## 实验问题
 1. 固件提取第一次尝试结果
 * （没有错，但是不是官方的文件，总有些别扭，因此重新再来）  
@@ -201,6 +251,9 @@ $ sudo -s
 # exit
 $ cp ./qemu-mips-static ./qemu
 ```
+
+
+
 ## 实验总结
 1. 路由器厂家学习
 * [全球最好的八大消费类路由器品牌商](https://tnext.org/3773.html)
@@ -233,10 +286,11 @@ $ cp ./qemu-mips-static ./qemu
 * Hit and Run (HAR)
 * Persistent Attacks (PA)
 3. qume运行两种模式：   
-* 本次实验选择user mode  
-
-user mode : qemu-mips(mipsel/arm)-static。用户只需要将各种不同平台的处理编译得到的Linux程序放在QEMU虚拟中运行即可，其他的事情全部由QEMU虚拟机来完成，不需要用户自定义内核和虚拟磁盘等文件。    
-system mode:qemu-system-mips(mipsel) : 用户可以为QEMU虚拟机指定运行的内核或者虚拟硬盘等文件，简单来说系统模式下QEMU虚拟机是可根据用户的要求配置的。  
+user mode : qemu-mips(mipsel/arm)-static。User mode：又称作“用户模式”，在这种模块下，QEMU运行针对不同指令编译的单个Linux或Darwin/macOS程序。系统调用与32/64位接口适应。在这种模式下，我们可以实现交叉编译（cross-compilation）与交叉侦错（cross- debugging）。      
+system mode:qemu-system-mips(mipsel) : “系统模式”，在这种模式下，QEMU模拟一个完整的计算机系统，包括外围设备。它可以用于在一台计算机上提供多台虚拟计算机的虚拟主机。 QEMU可以实现许多客户机OS的引导，比如x86，MIPS，32-bit ARMv7，PowerPC等等。   
+因此，在qemu运行固件的方式也有两种：  
+① 将文件系统上传到 qemu mips 虚拟机中运行（system mode）    
+② 借助 firmadyne 工具运行固件(user mode)
 
 4. 熵：一个系统越是有序，信息熵就越低；反之，一个系统越是混乱，信息熵就越高。  
 * [Differentiate Encryption From Compression Using Math](http://www.devttys0.com/2013/06/differentiate-encryption-from-compression-using-math/):The entropy of data can tell us a lot about the data’s contents. Encrypted data is typically a flat line with no variation, while compressed data will often have at least some variation.  
@@ -253,10 +307,6 @@ system mode:qemu-system-mips(mipsel) : 用户可以为QEMU虚拟机指定运行�
 * an extractor to extract a filesystem and kernel from downloaded firmware;
 * a small console application to spawn an additional shell for debugging;
 * and a scraper to download firmware from 42+ different vendors.
-
-7. 固件模拟运行由两种方式：  
-① 将文件系统上传到 qemu mips 虚拟机中运行；  
-② 借助 firmadyne 工具运行固件
 
 ## 参考文献
 [boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/)  

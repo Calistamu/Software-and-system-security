@@ -125,7 +125,8 @@ $ cp ./qemu-mips-static ./qemu
 ### qemu安装mips虚拟机
 * [QEMU System Emulator Targets](https://www.qemu.org/docs/master/system/targets.html)
 * [MIPS System emulator](https://www.qemu.org/docs/master/system/target-mips.html)
-* [How to build a Debian MIPS image on QEMU](https://markuta.com/how-to-build-a-mips-qemu-image-on-debian/)  
+* [How to build a Debian MIPS image on QEMU](https://markuta.com/how-to-build-a-mips-qemu-image-on-debian/) 
+* [MIPS环境填坑指南](https://zhuanlan.zhihu.com/p/110365843) 
 1. 查看qemu版本信息```qemu-img --version```  
 ![](images/qemu-version.png)
 2. 使用debian开发人员做好的镜像，其中已经包含了debian的squeeze版,下载[debian_squeeze_mips_standard.qcow2和vmlinux-2.6.32-5-4kc-malta](https://people.debian.org/~aurel32/qemu/mips/),使用scp拷贝到虚拟机中。  
@@ -174,6 +175,13 @@ sleep 3
 ### user mode:FAT模拟运行固件
 * [QEMU User space emulator](https://www.qemu.org/docs/master/user/main.html)
 * [QemuUserEmulation](https://wiki.debian.org/QemuUserEmulation)
+* [路由器固件模拟环境搭建（超详细）](https://zhuanlan.zhihu.com/p/146228197)
+* [IoT安全：调试环境搭建教程(MIPS篇)](https://bbs.pediy.com/thread-229583.htm)
+* [在QEMU MIPS虚拟机上运行MIPS程序（ssh方式](http://zeroisone.cc/2018/03/20/%E5%9B%BA%E4%BB%B6%E6%A8%A1%E6%8B%9F%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/#qemu%E6%A8%A1%E6%8B%9Fmips%E7%A8%8B%E5%BA%8F)
+* [DLink RCE漏洞CVE-2019-17621分析](https://www.freebuf.com/vuls/228726.html)
+* [使用QEMU配置一台虚拟MIPS系统](https://blog.sbw.so/u/create-mips-virtual-machine-in-qemu.html)
+* [路由器逆向分析------在QEMU MIPS虚拟机上运行MIPS程序（ssh方式）](https://blog.csdn.net/QQ1084283172/article/details/69652258)
+* []()
 ```
 sudo apt-get install bridge-utils uml-utilities
 ```

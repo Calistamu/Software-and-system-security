@@ -123,12 +123,13 @@ $ cp ./qemu-mips-static ./qemu
 ![](images/chroot-ok.png) 
 
 ### qemu安装mips虚拟机
-* []()
+* [QEMU System Emulator Targets](https://www.qemu.org/docs/master/system/targets.html)
+* [MIPS System emulator](https://www.qemu.org/docs/master/system/target-mips.html)
 * [How to build a Debian MIPS image on QEMU](https://markuta.com/how-to-build-a-mips-qemu-image-on-debian/)  
 1. 查看qemu版本信息```qemu-img --version```  
 ![](images/qemu-version.png)
-2. 下载[debian_squeeze_mips_standard.qcow2和vmlinux-2.6.32-5-4kc-malta](https://people.debian.org/~aurel32/qemu/mips/),使用scp拷贝到虚拟机中。  
-*   - Keyboard:       US
+2. 使用debian开发人员做好的镜像，其中已经包含了debian的squeeze版,下载[debian_squeeze_mips_standard.qcow2和vmlinux-2.6.32-5-4kc-malta](https://people.debian.org/~aurel32/qemu/mips/),使用scp拷贝到虚拟机中。  
+* - Keyboard:       US
   - Locale:         en_US
   - Mirror:         ftp.debian.org
   - Hostname:       debian-mips
@@ -170,8 +171,9 @@ sudo /sbin/brctl addif br0 $1
 sleep 3
 
 ```
-### 固件模拟运行
-2. 
+### user mode:FAT模拟运行固件
+* [QEMU User space emulator](https://www.qemu.org/docs/master/user/main.html)
+* [QemuUserEmulation](https://wiki.debian.org/QemuUserEmulation)
 ```
 sudo apt-get install bridge-utils uml-utilities
 ```
@@ -191,13 +193,6 @@ firmadyne_path=/home/attify/firmadyne # address of firmadyne
 ```
 
 安装[firmadyne](https://github.com/firmadyne/firmadyne)   
-
-
-### 确定攻击面
-boofuzz
-```
-pip install boofuzz
-```
 
 
 
@@ -252,7 +247,8 @@ $ sudo -s
 $ cp ./qemu-mips-static ./qemu
 ```
 
-
+4. 虚拟机扩容 - 仅仅磁盘扩容是不够的，系统依然无法使用
+解决：[VirtualBox文件系统已满--磁盘扩容](https://www.cnblogs.com/cthon/p/9334828.html)
 
 ## 实验总结
 1. 路由器厂家学习
@@ -285,7 +281,9 @@ $ cp ./qemu-mips-static ./qemu
 * Routing Table Poisoning (RTP)
 * Hit and Run (HAR)
 * Persistent Attacks (PA)
-3. qume运行两种模式：   
+3. qume运行两种模式：  
+* [Qemu: User mode emulation and Full system emulation](https://www.cnblogs.com/pengdonglin137/p/5020143.html)  
+* [QEMU-wiki](https://zh.wikipedia.org/wiki/QEMU) 
 user mode : qemu-mips(mipsel/arm)-static。User mode：又称作“用户模式”，在这种模块下，QEMU运行针对不同指令编译的单个Linux或Darwin/macOS程序。系统调用与32/64位接口适应。在这种模式下，我们可以实现交叉编译（cross-compilation）与交叉侦错（cross- debugging）。      
 system mode:qemu-system-mips(mipsel) : “系统模式”，在这种模式下，QEMU模拟一个完整的计算机系统，包括外围设备。它可以用于在一台计算机上提供多台虚拟计算机的虚拟主机。 QEMU可以实现许多客户机OS的引导，比如x86，MIPS，32-bit ARMv7，PowerPC等等。   
 因此，在qemu运行固件的方式也有两种：  

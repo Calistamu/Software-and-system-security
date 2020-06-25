@@ -22,8 +22,8 @@ mv DIR850LA1_FW114WWb07.bin dir850l.bin
 ```
 sudo apt install binwalk
 ```
-![](images/binwalk-ok.png)  
-3. 提取固件
+![](images/binwalk-ok.png)    
+3. 提取固件  
 * M ，—matryoshka 递归扫描可解压的
 * e，—extract 提取
 * 解压到的是_XXXXXX.bin.extracted/
@@ -46,56 +46,18 @@ unsquashfs 190090.squashfs
 * [DLink RCE 漏洞 CVE-2019-17621 分析](https://www.geekmeta.com/article/1292672.html)  
 1. 安装qemu
 * [qume](https://qume.io/)和[qemu](https://www.qemu.org/)傻傻分不清
-* [Download QEMU](https://www.qemu.org/download/)
-* user mode
+* [Download QEMU](https://www.qemu.org/download/)ls
 ```
-sudo apt-get install qemu 
-# 或sudo apt-get install qemu-user-static
-# install qemu
+sudo apt-get install qemu qemu-user-static 
 sudo apt-get -y install qemu qemu-system qemu-user-static qemu-user
 
 # install build-essential
 sudo apt-get -y install build-essential
 
-# install radare
-git clone https://github.com/radare/radare2.git
-cd radare2/sys
-./install.sh 
-cd ..
-
 # 查看当前版本 
 qemu-img --version
-```  
-qemu安装两次，第一次没有system mode,结果如下图。  
-![](images/qemu-ok.png)
-qemu第二次安装了system mode,结果如下图：   
-![](images/qemu-ok2.png)    
-build-essential安装版本如下图：    
-![](images/build-ok.png)     
-
-2. 查看ELF文件格式，拷贝相应的qemu程式
-查看方法一：使用rabin2
-```
-ls -lF ./bin/ls
-# output:
-# lrwxrwxrwx 1 mudou mudou 7 6月  16 14:11 ./bin/ls -> busybox*
-rabin2 -I ./bin/busybox
-# output: arch mips
-rabin2 -l ./bin/busybox
-```
-使用rabin看到二进制结构是[mips](https://en.wikibooks.org/wiki/MIPS_Assembly/MIPS_Details)
-* [rabin](http://www.linuxcertif.com/man/1/rabin/) - Binary program info extractor 
-* [MIPSPort](https://wiki.debian.org/MIPSPort):Through the Debian 10 ("buster") release, Debian currently provides 3 ports, 'mips', 'mipsel', and 'mips64el'. The 'mips' and 'mipsel' ports are respectively big and little endian variants, using the O32 ABI with hardware floating point. They use the MIPS II ISA in Jessie and the MIPS32R2 ISA in Stretch and later. The 'mips64el' port is a 64-bit little endian port using the N64 ABI, hardware floating point and the MIPS64R2 ISA.   
-总结：   
-mips 是32位大端字节序   
-mipsel 是32位小端字节序   
-mips64el 是64位小端字节序   
-
-![](images/mips.png)  
-依赖   
-![](images/libraries.png)  
-查看方法二：使用file
-使用file得到更多详细信息  
+```      
+使用file查看固件架构
 ![](images/file-type.png)
 根据ELF文件格式，使用相应的qemu程式模拟。
 ```
@@ -109,17 +71,7 @@ cp /usr/bin/qemu-mips-static ./
 sudo chroot . ./qemu-mips-static ./bin/ls
 ls
 ```
-* 会出现ls:not found的错误
-```
-$ exit
-$ sudo modprobe binfmt_misc
-$ sudo mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
-$ sudo -s
-# echo ':mips:M::\x7fELF\x01\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x08:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:/qemu:' > /proc/sys/fs/binfmt_misc/register
-# exit
-$ cp ./qemu-mips-static ./qemu
-```
-再次运行```sudo chroot . ./qemu-mips-static ./bin/sh```成功，说明qemu可以正常使用了。    
+出现了目录，说明qemu可以正常使用了。    
 ![](images/chroot-ok.png) 
 
 ### qemu安装mips虚拟机
@@ -172,23 +124,24 @@ sudo /sbin/brctl addif br0 $1
 sleep 3
 
 ```
-### user mode:FAT模拟运行固件
-* [QEMU User space emulator](https://www.qemu.org/docs/master/user/main.html)
-* [QemuUserEmulation](https://wiki.debian.org/QemuUserEmulation)
-* [路由器固件模拟环境搭建（超详细）](https://zhuanlan.zhihu.com/p/146228197)
+
 * [IoT安全：调试环境搭建教程(MIPS篇)](https://bbs.pediy.com/thread-229583.htm)
 * [在QEMU MIPS虚拟机上运行MIPS程序（ssh方式](http://zeroisone.cc/2018/03/20/%E5%9B%BA%E4%BB%B6%E6%A8%A1%E6%8B%9F%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/#qemu%E6%A8%A1%E6%8B%9Fmips%E7%A8%8B%E5%BA%8F)
 * [DLink RCE漏洞CVE-2019-17621分析](https://www.freebuf.com/vuls/228726.html)
 * [使用QEMU配置一台虚拟MIPS系统](https://blog.sbw.so/u/create-mips-virtual-machine-in-qemu.html)
 * [路由器逆向分析------在QEMU MIPS虚拟机上运行MIPS程序（ssh方式）](https://blog.csdn.net/QQ1084283172/article/details/69652258)
-* []()
+
+### user mode:FAT模拟运行固件
+* [QEMU User space emulator](https://www.qemu.org/docs/master/user/main.html)
+* [QemuUserEmulation](https://wiki.debian.org/QemuUserEmulation)
+* [路由器固件模拟环境搭建（超详细）](https://zhuanlan.zhihu.com/p/146228197)
+
 ```
 sudo apt-get install bridge-utils uml-utilities
 ```
-1. 安装下载FAT-[Firmware Analysis Toolkit](https://github.com/attify/firmware-analysis-toolkit):FIRMADYNE is an automated and scalable system for performing emulation and dynamic analysis of Linux-based embedded firmware.
+* FAT-[Firmware Analysis Toolkit](https://github.com/attify/firmware-analysis-toolkit):FIRMADYNE is an automated and scalable system for performing emulation and dynamic analysis of Linux-based embedded firmware.
 ```
-To install just clone the repository and run the script ./setup.sh.
-
+# To install just clone the repository and run the script ./setup.sh.
 git clone https://github.com/attify/firmware-analysis-toolkit
 cd firmware-analysis-toolkit
 ./setup.sh
@@ -198,9 +151,11 @@ sudo vim fat.config
 [DEFAULT]
 sudo_password=attify123 # sudo password
 firmadyne_path=/home/attify/firmadyne # address of firmadyne
-```
 
-安装[firmadyne](https://github.com/firmadyne/firmadyne)   
+# 将固件.bin文件拷贝到firmware-analysis-toolkit文件夹下
+./fat.py dir850.bin
+```
+![](images/fat-ok.png) 
 
 
 
@@ -257,6 +212,23 @@ $ cp ./qemu-mips-static ./qemu
 
 4. 虚拟机扩容 - 仅仅磁盘扩容是不够的，系统依然无法使用
 解决：[VirtualBox文件系统已满--磁盘扩容](https://www.cnblogs.com/cthon/p/9334828.html)
+5. ```sudo chroot . ./qemu-mips-static ./bin/ls```后输入```ls```会出现ls:not found的错误.
+解决：  
+```
+$ exit
+$ sudo modprobe binfmt_misc
+$ sudo mount binfmt_misc -t binfmt_misc /proc/sys/fs/binfmt_misc
+$ sudo -s
+# echo ':mips:M::\x7fELF\x01\x02\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x08:\xff\xff\xff\xff\xff\xff\xff\x00\xff\xff\xff\xff\xff\xff\xff\xff\xff\xfe\xff\xff:/qemu:' > /proc/sys/fs/binfmt_misc/register
+# exit
+$ cp ./qemu-mips-static ./qemu
+```
+再次运行```sudo chroot . ./qemu-mips-static ./bin/sh```成功，说明qemu可以正常使用了。    
+![](images/chroot-ok.png) 
+
+6. ```sudo apt-get install curses-devel```报错：'Unable to locate package curses-devel'  
+解决：参考[ubuntu16.04安装ncurses-devel](https://blog.csdn.net/WANG__RONGWEI/article/details/54846759)，使用```sudo apt-get install libncurses5-dev```
+
 
 ## 实验总结
 1. 路由器厂家学习
@@ -314,6 +286,39 @@ system mode:qemu-system-mips(mipsel) : “系统模式”，在这种模式下�
 * a small console application to spawn an additional shell for debugging;
 * and a scraper to download firmware from 42+ different vendors.
 
+7. 查看固件架构两种方式。  
+查看方法一：使用rabin2  
+工具安装
+```
+# install radare
+git clone https://github.com/radare/radare2.git
+cd radare2/sys
+./install.sh 
+cd ..
+```
+查看架构
+```
+ls -lF ./bin/ls
+# output:
+# lrwxrwxrwx 1 mudou mudou 7 6月  16 14:11 ./bin/ls -> busybox*
+rabin2 -I ./bin/busybox
+# output: arch mips
+rabin2 -l ./bin/busybox
+```
+使用rabin看到二进制结构是[mips](https://en.wikibooks.org/wiki/MIPS_Assembly/MIPS_Details)
+* [rabin](http://www.linuxcertif.com/man/1/rabin/) - Binary program info extractor 
+* [MIPSPort](https://wiki.debian.org/MIPSPort):Through the Debian 10 ("buster") release, Debian currently provides 3 ports, 'mips', 'mipsel', and 'mips64el'. The 'mips' and 'mipsel' ports are respectively big and little endian variants, using the O32 ABI with hardware floating point. They use the MIPS II ISA in Jessie and the MIPS32R2 ISA in Stretch and later. The 'mips64el' port is a 64-bit little endian port using the N64 ABI, hardware floating point and the MIPS64R2 ISA.   
+总结：   
+mips 是32位大端字节序   
+mipsel 是32位小端字节序   
+mips64el 是64位小端字节序   
+
+![](images/mips.png)  
+依赖   
+![](images/libraries.png)  
+查看方法二：使用file
+使用file得到更多详细信息  
+![](images/file-type.png)
 ## 参考文献
 [boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/)  
 [QEMU](https://www.qemu.org/)  

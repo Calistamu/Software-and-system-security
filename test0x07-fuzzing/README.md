@@ -89,7 +89,7 @@ firmadyne_path=/home/attify/firmadyne # address of firmadyne
 ./fat.py dir850.bin
 ```
 ![](images/fat-ok.png) 
-默认密码为空
+[默认用户名Admin,默认密码为空.](http://support.routercheck.com/D-Link/DIR-850L/DefaultPassword-3.html)
 
 ### 2-2.2：模拟运行方式二 --- （system mode）qemu安装mips虚拟机
 * [QEMU System Emulator Targets](https://www.qemu.org/docs/master/system/targets.html)
@@ -311,6 +311,9 @@ rabin2 -l ./bin/busybox
 mips 是32位大端字节序   
 mipsel 是32位小端字节序   
 mips64el 是64位小端字节序 
+
+### 本次实验心得
+1. 做实验的过程中，没有思路，或者忘了方法，回头看看老师曾经说了什么。
 ## 参考文献
 [boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/)  
 [QEMU](https://www.qemu.org/)  
@@ -323,4 +326,4 @@ mips64el 是64位小端字节序
 漏洞分析：  
 [路由器漏洞复现分析第二弹：CNVD-2018-01084 ](https://www.freebuf.com/vuls/162627.html)  
 [D-Link系列路由器漏洞挖掘入门](https://paper.seebug.org/429/)  
- 
+[D-Link DIR-850L 路由器漏洞验证报告](https://gorgias.me/2017/08/11/D-Link-DIR-850L-%E8%B7%AF%E7%94%B1%E5%99%A8%E6%BC%8F%E6%B4%9E%E9%AA%8C%E8%AF%81%E6%8A%A5%E5%91%8A/) 

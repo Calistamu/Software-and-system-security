@@ -3,7 +3,8 @@
 ## 实验要求
 - [x] 搜集市面上主要的路由器厂家,在厂家的官网中寻找可下载的固件在CVE漏洞数据中查找主要的家用路由器厂家的已经公开的漏洞，选择一两个能下载到切有已经公开漏洞的固件。
 - [] 如果能下载对应版本的固件，在QEMU中模拟运行。确定攻击面（对哪个端口那个协议进行Fuzzing测试），尽可能多的抓取攻击面正常的数据包（wireshark）
-- [] 查阅BooFuzz的文档，编写这对这个攻击面，这个协议的脚本，进行Fuzzing。配置BooFuzz QEMU的崩溃异常检测，争取触发一次固件崩溃，获得崩溃相关的输入测试样本和日志。尝试使用调试器和IDA-pro监视目标程序的崩溃过程，分析原理。
+- [] 查阅BooFuzz的文档，编写这对这个攻击面，这个协议的脚本，进行Fuzzing。配置BooFuzz QEMU的崩溃异常检测，争取触发一次固件崩溃，获得崩溃相关的输入测试样本和日志。
+- [] 尝试使用调试器和IDA-pro监视目标程序的崩溃过程，分析原理。
 ## 实验环境
 ubuntu-16.04-desktop
 ## 实验步骤
@@ -31,22 +32,11 @@ sudo apt install binwalk
 binwalk -Me dir850l.bin
 unsquashfs 190090.squashfs
 ```
-### 二、模拟运行固件
-* [Emulating Embedded Linux Devices with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-devices-with-qemu/)
-* [QEMU System Emulation User’s Guide](https://www.qemu.org/docs/master/system/index.html)
-
-* [Fuzzing Embedded Linux Devices](https://www.novetta.com/2018/07/fuzzing-embedded-linux-devices/)  
-* [Emulating Embedded Linux Devices with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-devices-with-qemu/)  
-* [Emulating Embedded Linux Systems with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-systems-with-qemu/)
-* [Dynamic Analysis of Firmware Using Firmadyne](https://opensourceforu.com/2018/09/dynamic-analysis-of-firmware-using-firmadyne/)  
-* [D-Link: A Firmware Security Analysis – Part 2](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-2/)
-* [D-Link: A Firmware Security Analysis – Part 3](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-3/)
-* [D-Link: A Firmware Security Analysis – Part 4](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-4/)
-* [Getting started with Firmware Emulation for IoT Devices](https://blog.attify.com/getting-started-with-firmware-emulation/) 
-* [DLink RCE 漏洞 CVE-2019-17621 分析](https://www.geekmeta.com/article/1292672.html)  
-1. 安装qemu
+### 二、模拟运行固件（两种方式）
+ 
+### 2-1.安装qemu
 * [qume](https://qume.io/)和[qemu](https://www.qemu.org/)傻傻分不清
-* [Download QEMU](https://www.qemu.org/download/)ls
+* [Download QEMU](https://www.qemu.org/download/)
 ```
 sudo apt-get install qemu qemu-user-static 
 sudo apt-get -y install qemu qemu-system qemu-user-static qemu-user
@@ -57,6 +47,7 @@ sudo apt-get -y install build-essential
 # 查看当前版本 
 qemu-img --version
 ```      
+![](images/qemu-version.png)
 使用file查看固件架构
 ![](images/file-type.png)
 根据ELF文件格式，使用相应的qemu程式模拟。
@@ -73,23 +64,61 @@ ls
 ```
 出现了目录，说明qemu可以正常使用了。    
 ![](images/chroot-ok.png) 
+### 2-2.1：模拟运行方式一 ---（user mode）FAT模拟运行固件
+* [QEMU User space emulator](https://www.qemu.org/docs/master/user/main.html)
+* [QemuUserEmulation](https://wiki.debian.org/QemuUserEmulation)
+* [路由器固件模拟环境搭建（超详细）](https://zhuanlan.zhihu.com/p/146228197)
 
-### qemu安装mips虚拟机
+```
+sudo apt-get install bridge-utils uml-utilities
+```
+* FAT-[Firmware Analysis Toolkit](https://github.com/attify/firmware-analysis-toolkit):FIRMADYNE is an automated and scalable system for performing emulation and dynamic analysis of Linux-based embedded firmware.
+```
+# To install just clone the repository and run the script ./setup.sh.
+git clone https://github.com/attify/firmware-analysis-toolkit
+cd firmware-analysis-toolkit
+./setup.sh
+
+sudo vim fat.config
+# edit as follows:
+[DEFAULT]
+sudo_password=attify123 # sudo password
+firmadyne_path=/home/attify/firmadyne # address of firmadyne
+
+# 将固件.bin文件拷贝到firmware-analysis-toolkit文件夹下
+./fat.py dir850.bin
+```
+![](images/fat-ok.png) 
+默认密码为空
+
+### 2-2.2：模拟运行方式二 --- （system mode）qemu安装mips虚拟机
 * [QEMU System Emulator Targets](https://www.qemu.org/docs/master/system/targets.html)
 * [MIPS System emulator](https://www.qemu.org/docs/master/system/target-mips.html)
 * [How to build a Debian MIPS image on QEMU](https://markuta.com/how-to-build-a-mips-qemu-image-on-debian/) 
 * [MIPS环境填坑指南](https://zhuanlan.zhihu.com/p/110365843) 
+* [Emulating Embedded Linux Devices with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-devices-with-qemu/)
+* [QEMU System Emulation User’s Guide](https://www.qemu.org/docs/master/system/index.html)
+
+* [Fuzzing Embedded Linux Devices](https://www.novetta.com/2018/07/fuzzing-embedded-linux-devices/)  
+* [Emulating Embedded Linux Devices with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-devices-with-qemu/)  
+* [Emulating Embedded Linux Systems with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-systems-with-qemu/)
+* [Dynamic Analysis of Firmware Using Firmadyne](https://opensourceforu.com/2018/09/dynamic-analysis-of-firmware-using-firmadyne/)  
+* [D-Link: A Firmware Security Analysis – Part 2](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-2/)
+* [D-Link: A Firmware Security Analysis – Part 3](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-3/)
+* [D-Link: A Firmware Security Analysis – Part 4](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-4/)
+* [Getting started with Firmware Emulation for IoT Devices](https://blog.attify.com/getting-started-with-firmware-emulation/) 
+* [DLink RCE 漏洞 CVE-2019-17621 分析](https://www.geekmeta.com/article/1292672.html) 
+* [IoT安全：调试环境搭建教程(MIPS篇)](https://bbs.pediy.com/thread-229583.htm)
+* [在QEMU MIPS虚拟机上运行MIPS程序（ssh方式](http://zeroisone.cc/2018/03/20/%E5%9B%BA%E4%BB%B6%E6%A8%A1%E6%8B%9F%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/#qemu%E6%A8%A1%E6%8B%9Fmips%E7%A8%8B%E5%BA%8F)
+* [DLink RCE漏洞CVE-2019-17621分析](https://www.freebuf.com/vuls/228726.html)
+* [使用QEMU配置一台虚拟MIPS系统](https://blog.sbw.so/u/create-mips-virtual-machine-in-qemu.html)
+* [路由器逆向分析------在QEMU MIPS虚拟机上运行MIPS程序（ssh方式）](https://blog.csdn.net/QQ1084283172/article/details/69652258)
+
 1. 查看qemu版本信息```qemu-img --version```  
 ![](images/qemu-version.png)
 2. 使用debian开发人员做好的镜像，其中已经包含了debian的squeeze版,下载[debian_squeeze_mips_standard.qcow2和vmlinux-2.6.32-5-4kc-malta](https://people.debian.org/~aurel32/qemu/mips/),使用scp拷贝到虚拟机中。  
-* - Keyboard:       US
-  - Locale:         en_US
-  - Mirror:         ftp.debian.org
-  - Hostname:       debian-mips
-  - Root password:  root
-  - User account:   user
-  - User password:  user
-3. 
+
+3. 配置
 ```
 # 安装依赖
 sudo apt-get install bridge-utils uml-utilities
@@ -122,41 +151,13 @@ sudo /sbin/ifconfig $1 0.0.0.0 promisc up
 echo "Adding $1 to br0..."
 sudo /sbin/brctl addif br0 $1
 sleep 3
-
 ```
 
-* [IoT安全：调试环境搭建教程(MIPS篇)](https://bbs.pediy.com/thread-229583.htm)
-* [在QEMU MIPS虚拟机上运行MIPS程序（ssh方式](http://zeroisone.cc/2018/03/20/%E5%9B%BA%E4%BB%B6%E6%A8%A1%E6%8B%9F%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/#qemu%E6%A8%A1%E6%8B%9Fmips%E7%A8%8B%E5%BA%8F)
-* [DLink RCE漏洞CVE-2019-17621分析](https://www.freebuf.com/vuls/228726.html)
-* [使用QEMU配置一台虚拟MIPS系统](https://blog.sbw.so/u/create-mips-virtual-machine-in-qemu.html)
-* [路由器逆向分析------在QEMU MIPS虚拟机上运行MIPS程序（ssh方式）](https://blog.csdn.net/QQ1084283172/article/details/69652258)
-
-### user mode:FAT模拟运行固件
-* [QEMU User space emulator](https://www.qemu.org/docs/master/user/main.html)
-* [QemuUserEmulation](https://wiki.debian.org/QemuUserEmulation)
-* [路由器固件模拟环境搭建（超详细）](https://zhuanlan.zhihu.com/p/146228197)
+### fuzzing
+[boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/) 
+```
 
 ```
-sudo apt-get install bridge-utils uml-utilities
-```
-* FAT-[Firmware Analysis Toolkit](https://github.com/attify/firmware-analysis-toolkit):FIRMADYNE is an automated and scalable system for performing emulation and dynamic analysis of Linux-based embedded firmware.
-```
-# To install just clone the repository and run the script ./setup.sh.
-git clone https://github.com/attify/firmware-analysis-toolkit
-cd firmware-analysis-toolkit
-./setup.sh
-
-sudo vim fat.config
-# edit as follows:
-[DEFAULT]
-sudo_password=attify123 # sudo password
-firmadyne_path=/home/attify/firmadyne # address of firmadyne
-
-# 将固件.bin文件拷贝到firmware-analysis-toolkit文件夹下
-./fat.py dir850.bin
-```
-![](images/fat-ok.png) 
-
 
 
 ## 实验问题
@@ -231,23 +232,26 @@ $ cp ./qemu-mips-static ./qemu
 
 
 ## 实验总结
-1. 路由器厂家学习
-* [全球最好的八大消费类路由器品牌商](https://tnext.org/3773.html)
+### 1. 路由器厂家学习总结
+* 参考[全球最好的八大消费类路由器品牌商](https://tnext.org/3773.html)
 * [Netgear](https://en.wikipedia.org/wiki/Netgear)
 * [Linksys](https://en.wikipedia.org/wiki/Linksys)
 * [TP-Link](https://en.wikipedia.org/wiki/TP-Link)
 * [D-Link](https://en.wikipedia.org/wiki/D-Link)
 * [Cisco Systems](https://en.wikipedia.org/wiki/Cisco_Systems)
-* 高端品牌：华硕、网件、领势等  
+* 总结：  
+高端品牌：华硕、网件、领势等  
 传统老牌：TP-LINK、水星、腾达等等    
 新进品牌：小米（红米）、华为（荣耀）、360   
-2. 路由器漏洞的威胁-有这么可怕吗？
-参考：  
-* [WiFi审判日：黑客劫持全球30万台无线路由器](https://www.aqniu.com/threat-alert/1998.html)  
-* [路由器漏洞频发，有些永远不会修补？！](https://www.mottoin.com/detail/2596.html)
-* [The 5 most common router attacks on a network](https://www.intelligentcio.com/eu/2017/10/16/the-5-most-common-router-attacks-on-a-network/)
-* [Router attacks: Five simple tips to lock criminals out](https://www.welivesecurity.com/2014/05/23/router-attacks-five-simple-tips-lock-criminals/)
-* [中国十大路由器厂家排行榜](https://www.douban.com/note/548077904/)  
+
+### 2. 路由器漏洞的威胁-有这么可怕吗？   
+* 参考：
+  - [WiFi审判日：黑客劫持全球30万台无线路由器](https://www.aqniu.com/threat-alert/1998.html)  
+  - [路由器漏洞频发，有些永远不会修补？！](https://www.mottoin.com/detail/2596.html)
+  - [The 5 most common router attacks on a network](https://www.intelligentcio.com/eu/2017/10/16/the-5-most-common-router-attacks-on-a-network/)
+  - [Router attacks: Five simple tips to lock criminals out](https://www.welivesecurity.com/2014/05/23/router-attacks-five-simple-tips-lock-criminals/)
+  - [中国十大路由器厂家排行榜](https://www.douban.com/note/548077904/)  
+
 威胁总结：  
 * 信息窃取：除了直接获取账号和密码，也可能跳转到钓鱼网站
 * 通过路由器控制智能家居，危险无处不在
@@ -261,43 +265,39 @@ $ cp ./qemu-mips-static ./qemu
 * Routing Table Poisoning (RTP)
 * Hit and Run (HAR)
 * Persistent Attacks (PA)
-3. qume运行两种模式：  
+
+### 3. qume运行两种模式：  
 * [Qemu: User mode emulation and Full system emulation](https://www.cnblogs.com/pengdonglin137/p/5020143.html)  
-* [QEMU-wiki](https://zh.wikipedia.org/wiki/QEMU) 
-user mode : qemu-mips(mipsel/arm)-static。User mode：又称作“用户模式”，在这种模块下，QEMU运行针对不同指令编译的单个Linux或Darwin/macOS程序。系统调用与32/64位接口适应。在这种模式下，我们可以实现交叉编译（cross-compilation）与交叉侦错（cross- debugging）。      
+* [QEMU-wiki](https://zh.wikipedia.org/wiki/QEMU)   
+
+user mode : qemu-mips(mipsel/arm)-static。User mode：又称作“用户模式”，在这种模块下，QEMU运行针对不同指令编译的单个Linux或Darwin/macOS程序。系统调用与32/64位接口适应。在这种模式下，我们可以实现交叉编译（cross-compilation）与交叉侦错（cross- debugging）。  
+
 system mode:qemu-system-mips(mipsel) : “系统模式”，在这种模式下，QEMU模拟一个完整的计算机系统，包括外围设备。它可以用于在一台计算机上提供多台虚拟计算机的虚拟主机。 QEMU可以实现许多客户机OS的引导，比如x86，MIPS，32-bit ARMv7，PowerPC等等。   
+
 因此，在qemu运行固件的方式也有两种：  
 ① 将文件系统上传到 qemu mips 虚拟机中运行（system mode）    
 ② 借助 firmadyne 工具运行固件(user mode)
 
-4. 熵：一个系统越是有序，信息熵就越低；反之，一个系统越是混乱，信息熵就越高。  
-* [Differentiate Encryption From Compression Using Math](http://www.devttys0.com/2013/06/differentiate-encryption-from-compression-using-math/):The entropy of data can tell us a lot about the data’s contents. Encrypted data is typically a flat line with no variation, while compressed data will often have at least some variation.  
-* [Encryption vs Compression, Part 2](http://www.devttys0.com/2013/06/encryption-vs-compression-part-2/)  
-5. 本次实验dir-850l固件下载地址集锦：
+### 4. 熵：一个系统越是有序，信息熵就越低；反之，一个系统越是混乱，信息熵就越高。  
+* 参考：  
+   - [Differentiate Encryption From Compression Using Math](http://www.devttys0.com/2013/06/differentiate-encryption-from-compression-using-math/):The entropy of data can tell us a lot about the data’s contents. Encrypted data is typically a flat line with no variation, while compressed data will often have at least some variation.  
+  - [Encryption vs Compression, Part 2](http://www.devttys0.com/2013/06/encryption-vs-compression-part-2/)  
+
+### 5. 本次实验dir-850l固件下载地址集锦：
 * [D-Link DIR-850L 固件下载](http://driver.zol.com.cn/detail/47/463483.shtml#download-box)
 * [D-Link DIR-850L 固件下载-驱动天空](https://www.drvsky.com/dlink/DIR-850L.htm#download)
 * [D-LINK官网](https://support.dlink.com/ProductInfo.aspx?m=dir-850L)
 * [DIR-850L-D-Link Australia & New Zealand Support Resources](http://support.dlink.com.au/Download/download.aspx?product=DIR-850L)  
 
-6. [firmdayne](https://github.com/firmadyne/firmadyne) includes the following components:
-* modified kernels (MIPS: v2.6.32, ARM: v4.1, v3.10) for instrumentation of firmware execution;
-* a userspace NVRAM library to emulate a hardware NVRAM peripheral;
-* an extractor to extract a filesystem and kernel from downloaded firmware;
-* a small console application to spawn an additional shell for debugging;
-* and a scraper to download firmware from 42+ different vendors.
-
-7. 查看固件架构两种方式。  
-查看方法一：使用rabin2  
-工具安装
+### 6. 查看固件架构两种方式。  
+查看方法一：使用[rabin](http://www.linuxcertif.com/man/1/rabin/) - Binary program info extractor
 ```
 # install radare
 git clone https://github.com/radare/radare2.git
 cd radare2/sys
 ./install.sh 
 cd ..
-```
-查看架构
-```
+
 ls -lF ./bin/ls
 # output:
 # lrwxrwxrwx 1 mudou mudou 7 6月  16 14:11 ./bin/ls -> busybox*
@@ -305,20 +305,17 @@ rabin2 -I ./bin/busybox
 # output: arch mips
 rabin2 -l ./bin/busybox
 ```
-使用rabin看到二进制结构是[mips](https://en.wikibooks.org/wiki/MIPS_Assembly/MIPS_Details)
-* [rabin](http://www.linuxcertif.com/man/1/rabin/) - Binary program info extractor 
-* [MIPSPort](https://wiki.debian.org/MIPSPort):Through the Debian 10 ("buster") release, Debian currently provides 3 ports, 'mips', 'mipsel', and 'mips64el'. The 'mips' and 'mipsel' ports are respectively big and little endian variants, using the O32 ABI with hardware floating point. They use the MIPS II ISA in Jessie and the MIPS32R2 ISA in Stretch and later. The 'mips64el' port is a 64-bit little endian port using the N64 ABI, hardware floating point and the MIPS64R2 ISA.   
-总结：   
-mips 是32位大端字节序   
-mipsel 是32位小端字节序   
-mips64el 是64位小端字节序   
-
-![](images/mips.png)  
-依赖   
-![](images/libraries.png)  
+![](images/mips.png)    
 查看方法二：使用file
 使用file得到更多详细信息  
 ![](images/file-type.png)
+
+### 7. mips vs mipsel vs mips64el  
+[MIPSPort](https://wiki.debian.org/MIPSPort):Through the Debian 10 ("buster") release, Debian currently provides 3 ports, 'mips', 'mipsel', and 'mips64el'. The 'mips' and 'mipsel' ports are respectively big and little endian variants, using the O32 ABI with hardware floating point. They use the MIPS II ISA in Jessie and the MIPS32R2 ISA in Stretch and later. The 'mips64el' port is a 64-bit little endian port using the N64 ABI, hardware floating point and the MIPS64R2 ISA.   
+总结：   
+mips 是32位大端字节序   
+mipsel 是32位小端字节序   
+mips64el 是64位小端字节序 
 ## 参考文献
 [boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/)  
 [QEMU](https://www.qemu.org/)  

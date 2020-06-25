@@ -161,25 +161,19 @@ sleep 3
 
 
 ## 实验问题
-1. 固件提取第一次尝试结果
-* （没有错，但是不是官方的文件，总有些别扭，因此重新再来）  
+### 1. 固件提取第一次尝试结果（没有错，但是下载的不是官方的文件，总有些别扭，因此重新再来）  
 
 固件下载地址：  
 * [D-Link DIR-850L 固件下载](http://driver.zol.com.cn/detail/47/463483.shtml#download-box)
 * [D-Link DIR-850L 固件下载-驱动天空](https://www.drvsky.com/dlink/DIR-850L.htm#download)
 
-使用scp将dir-850l.zip和dir-850l.exe拷贝到虚拟机中，，解压缩dir-850l.zip,得到DIR850L_FW113WWb01_f4if.bin文件，为了方便，更改文件名称为dir850l.bin。 
-```binwalk -Me dir850l.bin```提取固件，得到_dir850l.bin.extracted文件夹。
-![](images/ex-1.png)
-可以看到Squashfs系统，小端法。压缩包的md5校验码和压缩包内部2888文件的校验码
-* 因为不是从官网下载，从别的网站上下载的zip文件，打包了别的东西。(在之后的分析中可以看到这里的想法是正确的。)  
-
-重命名_dir850l.bin.extracted为dir850l。进入dir850l文件夹中看到190090.squashfs是我们的目标文件
-* 此时这里已经有squashfs-root应该是因为这是别人已经分析过的文件.
-
-![](images/ex-2.png)
-
-接下来提取文件的方式有两种，无论哪种方法，得到的结果是一样的。  
+使用scp将dir-850l.zip和dir-850l.exe拷贝到虚拟机中，解压缩dir-850l.zip,得到DIR850L_FW113WWb01_f4if.bin，更改文件名称为dir850l.bin。 
+```binwalk -Me dir850l.bin```提取固件，得到_dir850l.bin.extracted文件夹。  
+![](images/ex-1.png)  
+可以看到Squashfs系统，小端法。压缩包的md5校验码和压缩包内部2888文件的校验码。   
+重命名_dir850l.bin.extracted为dir850l。进入dir850l文件夹中看到190090.squashfs是我们的目标文件。
+![](images/ex-2.png)   
+提取文件，方式两种，无论哪种方法，得到的结果是一样的。  
 一：使用 binwalk -Me 命令提取该文件。  
 二：使用 unsquashfs 190090.squashfs 命令来提取文件。  
 * [SquashFS HOWTO](https://www.tldp.org/HOWTO/html_single/SquashFS-HOWTO/)
@@ -193,12 +187,12 @@ unsquashfs 190090.squashfs提取结果如下图：
 
 ![](images/ex-5.png)
 
-2. 第一次卡片被qemu tool时弄错了二进制结构  
+### 2. 第一次拷贝qemu tool时弄错了二进制结构  
 进入squashfs-root目录，将将qemu-mipsel-static拷贝到当前目录下  
 ![](images/run-1.png)   
 总结：应该先查看类型再拷贝
 
-3. ```sudo chroot . ./qemu-mips-static ./bin/sh```开启模拟运行以后，报错'command not found'.  
+### 3. ```sudo chroot . ./qemu-mips-static ./bin/sh```开启模拟运行以后，报错'command not found'.  
 ![](images/wrong1.png)
 解决：  
 ```
@@ -211,9 +205,10 @@ $ sudo -s
 $ cp ./qemu-mips-static ./qemu
 ```
 
-4. 虚拟机扩容 - 仅仅磁盘扩容是不够的，系统依然无法使用
+### 4. 虚拟机扩容 - 仅仅磁盘扩容是不够的，系统依然无法使用
 解决：[VirtualBox文件系统已满--磁盘扩容](https://www.cnblogs.com/cthon/p/9334828.html)
-5. ```sudo chroot . ./qemu-mips-static ./bin/ls```后输入```ls```会出现ls:not found的错误.
+
+### 5. ```sudo chroot . ./qemu-mips-static ./bin/ls```后输入```ls```会出现ls:not found的错误.
 解决：  
 ```
 $ exit
@@ -227,7 +222,7 @@ $ cp ./qemu-mips-static ./qemu
 再次运行```sudo chroot . ./qemu-mips-static ./bin/sh```成功，说明qemu可以正常使用了。    
 ![](images/chroot-ok.png) 
 
-6. ```sudo apt-get install curses-devel```报错：'Unable to locate package curses-devel'  
+### 6. ```sudo apt-get install curses-devel```报错：'Unable to locate package curses-devel'  
 解决：参考[ubuntu16.04安装ncurses-devel](https://blog.csdn.net/WANG__RONGWEI/article/details/54846759)，使用```sudo apt-get install libncurses5-dev```
 
 

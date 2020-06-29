@@ -27,3 +27,19 @@ import sqlite3
             self.end_headers()
             self.wfile.write(( "<html><body>%s</body></html>" %response_content ).encode('UTF-8') )
 ```
+## 拓展学习---使用sqlmap探测当前的sql注入漏洞
+* [sqlmap](https://github.com/sqlmapproject/sqlmap)
+```
+git clone https://github.com/sqlmapproject/sqlmap
+
+# To get a list of basic options and switches use:
+python sqlmap.py -h
+# To get a list of all options and switches use:
+python sqlmap.py -hh
+
+# 探测漏洞
+python sqlmap.py -u URL
+# 获取数据库内数据
+python sqlmap.py -u URL --dbs
+
+```

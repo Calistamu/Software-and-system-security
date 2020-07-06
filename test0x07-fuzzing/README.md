@@ -156,7 +156,17 @@ sleep 3
 ### fuzzing
 [boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/) 
 ```
-
+Step1-安装python3
+# install
+sudo add-apt-repository ppa:jonathonf/python-3.6
+sudo apt-get update
+sudo apt-get install python3.6
+# 设置为默认
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.5 1
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 2
+sudo update-alternatives --config python3
+# 确认版本
+python3 -V
 ```
 
 
@@ -225,6 +235,7 @@ $ cp ./qemu-mips-static ./qemu
 ### 6. ```sudo apt-get install curses-devel```报错：'Unable to locate package curses-devel'  
 解决：参考[ubuntu16.04安装ncurses-devel](https://blog.csdn.net/WANG__RONGWEI/article/details/54846759)，使用```sudo apt-get install libncurses5-dev```
 
+### 7. 执行```sudo apt-get```的时候出现报错'Unable to lock the administration directory (/var/lib/dpkg/), is another process using it?'   
 
 ## 实验总结
 ### 1. 路由器厂家学习总结

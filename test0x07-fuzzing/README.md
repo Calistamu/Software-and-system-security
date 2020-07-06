@@ -85,9 +85,10 @@ sudo vim fat.config
 sudo_password=attify123 # sudo password
 firmadyne_path=/home/attify/firmadyne # address of firmadyne
 
-# 将固件.bin文件拷贝到firmware-analysis-toolkit文件夹下
+# 将固件.bin文件拷贝到firmware-analysis-toolkit文件夹下,模拟运行
 ./fat.py dir850.bin
 ```
+访问'http://192.168.0.1'  
 ![](images/fat-ok.png) 
 [默认用户名Admin,默认密码为空.](http://support.routercheck.com/D-Link/DIR-850L/DefaultPassword-3.html)
 
@@ -154,22 +155,42 @@ sleep 3
 ```
 
 ### fuzzing
-[boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/) 
+* 参考：  
+[boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/)    
+[初探BooFuzz](https://xz.aliyun.com/t/5155)
+1. 安装python3
 ```
 Step1-安装python3
-# install
-sudo add-apt-repository ppa:jonathonf/python-3.6
+# install python3
+sudo apt-get install python3
+# or install python3.7
+# 配置软件仓库，因为python3.7新版没有发布到ubuntu的正式仓库中，通过第3方仓库来做
+sudo add-apt-repository ppa:jonathonf/python-3.7
+# 检查系统软件包并安装 python 3.7
 sudo apt-get update
-sudo apt-get install python3.6
-# 设置为默认
+sudo apt-get install python3.7
+# 设置为默认使用
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.5 1
 sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 2
 sudo update-alternatives --config python3
 # 确认版本
 python3 -V
+# output:
+# mudou@mudou-VirtualBox:~$ python3 -V
+# Python 3.5.2
 ```
-
-
+2. 安装boofuzz
+* [installing boofuzz](https://boofuzz.readthedocs.io/en/stable/user/install.html)
+```
+git clone https://github.com/jtpereyda/boofuzz.git
+cd boofuzz
+sudo pip install .
+```
+3. boofuzz配置
+* [quickstart](https://boofuzz.readthedocs.io/en/stable/user/quickstart.html)
+4. 使用boofuzz
+* [使用boofuzz进行漏洞挖掘(一)](https://www.freebuf.com/column/185606.html)
+* [使用boofuzz进行漏洞挖掘(二)](https://www.freebuf.com/column/185658.html)
 ## 实验问题
 ### 1. 固件提取第一次尝试结果（没有错，但是下载的不是官方的文件，总有些别扭，因此重新再来）  
 
@@ -236,7 +257,7 @@ $ cp ./qemu-mips-static ./qemu
 解决：参考[ubuntu16.04安装ncurses-devel](https://blog.csdn.net/WANG__RONGWEI/article/details/54846759)，使用```sudo apt-get install libncurses5-dev```
 
 ### 7. 执行```sudo apt-get```的时候出现报错'Unable to lock the administration directory (/var/lib/dpkg/), is another process using it?'   
-
+解决：[Unable to lock the administration directory (/var/lib/dpkg/) is another process using it?  ](https://askubuntu.com/questions/15433/unable-to-lock-the-administration-directory-var-lib-dpkg-is-another-process),执行```sudo rm /var/lib/apt/lists/lock```
 ## 实验总结
 ### 1. 路由器厂家学习总结
 * 参考[全球最好的八大消费类路由器品牌商](https://tnext.org/3773.html)

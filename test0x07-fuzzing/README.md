@@ -88,8 +88,8 @@ firmadyne_path=/home/attify/firmadyne # address of firmadyne
 # 将固件.bin文件拷贝到firmware-analysis-toolkit文件夹下,模拟运行
 ./fat.py dir850.bin
 ```
-访问'http://192.168.0.1'  
-![](images/fat-ok.png) 
+根据图中显示路由器固件监听的桥接网络192.168.0.1，访问'http://192.168.0.1'  
+![](images/fat-ok.png)   
 [默认用户名Admin,默认密码为空.](http://support.routercheck.com/D-Link/DIR-850L/DefaultPassword-3.html)
 
 ### 2-2.2：模拟运行方式二 --- （system mode）qemu安装mips虚拟机
@@ -258,6 +258,24 @@ $ cp ./qemu-mips-static ./qemu
 
 ### 7. 执行```sudo apt-get```的时候出现报错'Unable to lock the administration directory (/var/lib/dpkg/), is another process using it?'   
 解决：[Unable to lock the administration directory (/var/lib/dpkg/) is another process using it?  ](https://askubuntu.com/questions/15433/unable-to-lock-the-administration-directory-var-lib-dpkg-is-another-process),执行```sudo rm /var/lib/apt/lists/lock```
+
+### 8. Ubuntu16.04安装Wireshark
+```
+# 添加wireshark的源
+$ sudo apt-add-repository ppa:wireshark-dev/stable
+# 更新软件源
+sudo apt-get update
+# 安装wireshark
+sudo apt-get install wireshark
+# 新增wireshark用户组
+$ sudo groupadd  wireshark
+# 将dumpcap更改为wireshark用户组 
+$sudo chgrp wireshark /usr/bin/dumpcap 
+# 让wireshark用户组有root权限使用dumpcap
+$ sudo chmod 4755 /usr/bin/dumpcap
+# 将需要使用的普通用户名加入wireshark用户组
+$ sudo gpasswd -a mudou wireshark 
+```
 ## 实验总结
 ### 1. 路由器厂家学习总结
 * 参考[全球最好的八大消费类路由器品牌商](https://tnext.org/3773.html)

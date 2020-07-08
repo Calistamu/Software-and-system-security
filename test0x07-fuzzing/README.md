@@ -2,7 +2,7 @@
 
 ## 实验要求
 - [x] 搜集市面上主要的路由器厂家,在厂家的官网中寻找可下载的固件在CVE漏洞数据中查找主要的家用路由器厂家的已经公开的漏洞，选择一两个能下载到切有已经公开漏洞的固件。
-- [] 如果能下载对应版本的固件，在QEMU中模拟运行。确定攻击面（对哪个端口那个协议进行Fuzzing测试），尽可能多的抓取攻击面正常的数据包（wireshark）
+- [] 如果能下载对应版本的固件，在QEMU中模拟运行。确定攻击面（对哪个端口哪个协议进行Fuzzing测试），尽可能多的抓取攻击面正常的数据包（wireshark）
 - [] 查阅BooFuzz的文档，编写这对这个攻击面，这个协议的脚本，进行Fuzzing。配置BooFuzz QEMU的崩溃异常检测，争取触发一次固件崩溃，获得崩溃相关的输入测试样本和日志。
 - [] 尝试使用调试器和IDA-pro监视目标程序的崩溃过程，分析原理。
 ## 实验环境
@@ -186,11 +186,41 @@ git clone https://github.com/jtpereyda/boofuzz.git
 cd boofuzz
 sudo pip install .
 ```
-3. boofuzz配置
+3. 编写fuzz脚本
 * [quickstart](https://boofuzz.readthedocs.io/en/stable/user/quickstart.html)
-4. 使用boofuzz
 * [使用boofuzz进行漏洞挖掘(一)](https://www.freebuf.com/column/185606.html)
 * [使用boofuzz进行漏洞挖掘(二)](https://www.freebuf.com/column/185658.html)
+### 调试分析
+1. 安装gdb
+```
+sudo apt-get update
+sudo apt-get install  gdb
+```
+2. 安装IDA-pro
+下载[IDA Pro v6.4 for Linux](https://pan.baidu.com/s/1hNJ5Y7fqs6ONbwvHzv5qnA)-密码sshc。使用scp拷贝到虚拟机中。解压，安装依赖，运行。
+[在linux mint/ubuntu16.04TLS上安装IDA PRO](https://blog.csdn.net/qq_36142158/article/details/79504415)
+```
+# 64位需要安装依赖
+sudo apt-get install libc6-i686:i386 libexpat1:i386 libffi6:i386 libfontconfig1:i386 libfreetype6:i386 libgcc1:i386 libglib2.0-0:i386 libice6:i386 libpcre3:i386 libpng12-0:i386 libsm6:i386 libstdc++6:i386 libuuid1:i386 libx11-6:i386 libxau6:i386 libxcb1:i386 libxdmcp6:i386 libxext6:i386 libxrender1:i386 zlib1g:i386 libx11-xcb1:i386 libdbus-1-3:i386 libxi6:i386 libsm6:i386 libcurl3:i386
+
+sudo apt-get install libstdc++5:i386
+sudo apt-get install libc6:i386
+sudo apt-get install lib32stdc++6
+sudo apt-get install lib32z1
+sudo apt-get  install libglib2.0-0:i386
+sudo apt-get install libx11-6:i386
+
+# 32位运行
+./idaq   
+# 64位运行
+./idaq64
+```
+运行以后看到命令行如下图-没有连接server，但ida-pro已经可以成功运行。  
+![](images/ida-ok.png)  
+在虚拟机中弹出了ida-pro的启动弹窗   
+![](images/ida-ok3.png)
+任意打开dir850l.bin文件，看到如下图，ida-pro安装成功。  
+![](images/ida-ok2.png)
 ## 实验问题
 ### 1. 固件提取第一次尝试结果（没有错，但是下载的不是官方的文件，总有些别扭，因此重新再来）  
 
@@ -376,4 +406,7 @@ mips64el 是64位小端字节序
 漏洞分析：  
 [路由器漏洞复现分析第二弹：CNVD-2018-01084 ](https://www.freebuf.com/vuls/162627.html)  
 [D-Link系列路由器漏洞挖掘入门](https://paper.seebug.org/429/)  
-[D-Link DIR-850L 路由器漏洞验证报告](https://gorgias.me/2017/08/11/D-Link-DIR-850L-%E8%B7%AF%E7%94%B1%E5%99%A8%E6%BC%8F%E6%B4%9E%E9%AA%8C%E8%AF%81%E6%8A%A5%E5%91%8A/) 
+[D-Link DIR-850L 路由器漏洞验证报告](https://gorgias.me/2017/08/11/D-Link-DIR-850L-%E8%B7%AF%E7%94%B1%E5%99%A8%E6%BC%8F%E6%B4%9E%E9%AA%8C%E8%AF%81%E6%8A%A5%E5%91%8A/)   
+[D-Link DIR-850L路由器分析之获取设备shell](https://cq674350529.github.io/2019/03/18/D-Link-DIR-850L%E8%B7%AF%E7%94%B1%E5%99%A8%E5%88%86%E6%9E%90%E4%B9%8B%E8%8E%B7%E5%8F%96%E8%AE%BE%E5%A4%87shell/)  [一个路由器竟然被曝10个零日漏洞](https://www.aqniu.com/threat-alert/28078.html)   
+[Pwning the Dlink 850L routers and abusing the MyDlink Cloud protocol](https://pierrekim.github.io/blog/2017-09-08-dlink-850l-mydlink-cloud-0days-vulnerabilities.html)  
+

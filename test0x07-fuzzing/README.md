@@ -2,7 +2,7 @@
 
 ## 实验要求
 - [x] 搜集市面上主要的路由器厂家,在厂家的官网中寻找可下载的固件在CVE漏洞数据中查找主要的家用路由器厂家的已经公开的漏洞，选择一两个能下载到切有已经公开漏洞的固件。
-- [] 如果能下载对应版本的固件，在QEMU中模拟运行。确定攻击面（对哪个端口哪个协议进行Fuzzing测试），尽可能多的抓取攻击面正常的数据包（wireshark）
+- [x] 如果能下载对应版本的固件，在QEMU中模拟运行。确定攻击面（对哪个端口哪个协议进行Fuzzing测试），尽可能多的抓取攻击面正常的数据包（wireshark）
 - [] 查阅BooFuzz的文档，编写这对这个攻击面，这个协议的脚本，进行Fuzzing。配置BooFuzz QEMU的崩溃异常检测，争取触发一次固件崩溃，获得崩溃相关的输入测试样本和日志。
 - [] 尝试使用调试器和IDA-pro监视目标程序的崩溃过程，分析原理。
 ## 实验环境
@@ -10,7 +10,7 @@ ubuntu-16.04-desktop
 ## 实验步骤
 ### 一、固件下载并提取
 1. 固件准备。  
-固件下载地址：[DIR 850l-Download direct](http://files.dlink.com.au/products/DIR-850L)
+固件下载地址：[DIR 850l-Download direct](http://files.dlink.com.au/products/DIR-850L)，下载dir-850l-REV_A
 ```
 # 物理机上操作：
 scp DIR850LA1_FW114WWb07.bin mudou@192.168.57.117:/home/mudou/dir-850l/
@@ -114,7 +114,10 @@ firmadyne_path=/home/attify/firmadyne # address of firmadyne
 * [DLink RCE漏洞CVE-2019-17621分析](https://www.freebuf.com/vuls/228726.html)
 * [使用QEMU配置一台虚拟MIPS系统](https://blog.sbw.so/u/create-mips-virtual-machine-in-qemu.html)
 * [路由器逆向分析------在QEMU MIPS虚拟机上运行MIPS程序（ssh方式）](https://blog.csdn.net/QQ1084283172/article/details/69652258)
-
+* [详细的路由器漏洞分析环境搭建教程](https://chuansongme.com/n/864762852648)
+* [路由器固件安全分析技术（一）](https://www.vulbox.com/knowledge/detail/?id=35%20%20)
+* [路由器固件安全分析技术（二）](https://www.vulbox.com/knowledge/detail/?id=42%20)
+* [msfvenom生成各类Payload命令](https://www.huo119.com/post/909.shtm)
 1. 查看qemu版本信息```qemu-img --version```  
 ![](images/qemu-version.png)
 2. 使用debian开发人员做好的镜像，其中已经包含了debian的squeeze版,下载[debian_squeeze_mips_standard.qcow2和vmlinux-2.6.32-5-4kc-malta](https://people.debian.org/~aurel32/qemu/mips/),使用scp拷贝到虚拟机中。  
@@ -154,7 +157,7 @@ sudo /sbin/brctl addif br0 $1
 sleep 3
 ```
 
-### fuzzing
+### 三、fuzzing
 * 参考：  
 [boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/)    
 [初探BooFuzz](https://xz.aliyun.com/t/5155)
@@ -190,7 +193,7 @@ sudo pip install .
 * [quickstart](https://boofuzz.readthedocs.io/en/stable/user/quickstart.html)
 * [使用boofuzz进行漏洞挖掘(一)](https://www.freebuf.com/column/185606.html)
 * [使用boofuzz进行漏洞挖掘(二)](https://www.freebuf.com/column/185658.html)
-### 调试分析
+### 四、调试分析
 1. 安装gdb
 ```
 sudo apt-get update
@@ -221,6 +224,8 @@ sudo apt-get install libx11-6:i386
 ![](images/ida-ok3.png)
 任意打开dir850l.bin文件，看到如下图，ida-pro安装成功。  
 ![](images/ida-ok2.png)
+3. 安装下载burpsuite  
+下载[burpsuite](https://portswigger.net/burp/releases/professional-community-2020-6)，scp拷贝到Ubuntu中运行.sh文件，一直[enter]即可。
 ## 实验问题
 ### 1. 固件提取第一次尝试结果（没有错，但是下载的不是官方的文件，总有些别扭，因此重新再来）  
 

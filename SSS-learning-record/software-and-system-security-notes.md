@@ -451,7 +451,6 @@ Run之后访问 127.0.0.1:8000,结果如下图。
   这么改一下,比如'http://127.0.0.1:8000/edu/index/100'就可以有一个动态的效果,如图所示。  
   ![](images/dynamic-index.png)
   pk就是参数，而且只允许整数。路由系统会把这个参数赋值传递给views函数的pk参数。
-  
 ###### Step4-在views中访问数据库。   
 如何在views函数中访问数据库。改一下views.py。
 ```
@@ -523,6 +522,7 @@ admin.site.register(Score, ScoreAdmin)
 ![](images/viewspy-render.png)
 render是一个Django内置的函数。用于在模板文件的基础上，通过渲染得到动态的网页效果。其中score.html是模板,后面的{}dict是参数,render必须传参reqeust,然后render函数就会在模板html文件的基础上，生成一个html,并返回 HTTPResponse,所以可以直接作为 views函数的返回。
 那么还需要一个score.html，在templates目录下。
+
 ```
 <html>
 <body>

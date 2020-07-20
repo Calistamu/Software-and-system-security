@@ -27,7 +27,14 @@ import sqlite3
             self.end_headers()
             self.wfile.write(( "<html><body>%s</body></html>" %response_content ).encode('UTF-8') )
 ```
+## 实验效果
+
+> video/sql_injection.mp4
+
+[sql简单编写及利用](https://www.bilibili.com/video/BV1AV411r7Ao)
+
 ## 拓展学习---使用sqlmap探测当前的sql注入漏洞
+
 * [sqlmap](https://github.com/sqlmapproject/sqlmap)
 ```
 git clone https://github.com/sqlmapproject/sqlmap

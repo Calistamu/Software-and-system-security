@@ -10,7 +10,8 @@ ubuntu 18.04 server
 ![](images/install-klee.png)  
 本次试验选用docker的方式。
 
-1.安装Docker Engine - Enterprise
+1.安装Docker Engine - Community
+
 ```
 1.设置仓库
 # 更新 apt 包索引。
@@ -50,6 +51,7 @@ $ sudo docker run hello-world
 ```
 当前docker版本信息如下图：  
 ![](images/docker-version.png)  
+
 2. 安装klee和基本使用
 ```
 # Pulling from the Docker Hub
@@ -61,7 +63,7 @@ $ cd klee
 $ docker build -t klee/klee 
 
 # Creating a KLEE Docker container
-# --ulimit option sets an unlimited stack size inside the container. This is to avoid stack overflow issues when running KLEE.
+# --ulimit option sets an unlimited stack size inside the container. # This is to avoid stack overflow issues when running KLEE.
 docker run --rm -ti --ulimit='stack=-1:-1' klee/klee
 ```
 klee版本信息如下图：  
@@ -139,6 +141,7 @@ klee总共执行了4848113条指令，探索了7438条路径，生成了16个测
 ![](images/2-2.png)
 分析：出现内存错误，不是因为正则表达式函数有一个错误，而是按时测试驱动程序有一个错误。因为输入的正则表达式序列完全是符号的，但是match函数期望它是一个以null结尾的字符串。  
 解决：将' \0 '符号化后存储在缓冲区的末尾。如图进行修改：
+
 * 也可以增加：klee_assume(re[SIZE - 1] == '\0'); 
 * klee_assume接受一个参数(一个无符号整数)，该参数通常应该是某种条件表达式，并且“假定”该表达式在当前路径上为真(如果这种情况永远不会发生，即该表达式可证明为假，那么KLEE将报告错误)。
 * klee_assume可以用来编码更复杂的约束。例如，我们可以使用klee_assume(re[0] != '^')使KLEE只探索第一个字节不是'^'的状态。像'&&'和'||'这样的布尔条件可能会被编译成在计算表达式结果之前进行分支的代码。在这种情况下，KLEE将在进程到达对klee_assume的调用之前对进程进行分支，这可能会导致探索不必要的附加状态。出于这个原因，最好使用尽可能简单的表达式来进行klee_assume(例如，将一个调用拆分为多个调用)，并使用'&'和'|'操作符，而不是短路操作符。
@@ -146,6 +149,7 @@ klee总共执行了4848113条指令，探索了7438条路径，生成了16个测
 ![](images/2-3.png) 
 再次编译链接后运行，发现报错已解决。  
 ![](images/2-4.png)
+
 5. tutorial 3:Solving a maze with KLEE
 ```
 # Update aptitude 
@@ -176,6 +180,8 @@ cat solution.txt | ./maze
 # The maze program using Klee symbolic execution and assertions. When klee evaluates the maze, it will discover the "actual solution", and any "hidden solutions" (which exist due to "bugs" in the maze). 
 # Source is in maze_klee.c
 cd ~/maze
+# cp klee/klee.h
+cp -r /home/klee/klee_src/include/klee klee/
 # Build LLVM Bytecode: 
 ./scripts/build_bc.sh 
 (builds "maze_klee.bc" using "clang -emit-llvm") 
@@ -207,6 +213,7 @@ klee --optimize --libc=uclibc --posix-runtime main.ll --sym-arg 100
 分析结果：  
 ![](images/4-2.png)
 可以看到'data'中的值就是正确的password  
+
 7. tutorial 5:Keygenning With KLEE: A more in-depth guide to using KLEE to solve larger binaries.
 * 把之前的tutorial内容复习了一遍，之后的内容针对反解序列化的软件进行
 >tutorial-5所需代码存于：code/test.c 
@@ -339,7 +346,12 @@ $ klee -posix-runtime password2.bc -sym-stdin 10
 klee -posix-runtime password2.bc A -sym-files 1 10
 ```
 ![](images/7-3.png) 
+## 实验效果
+
+[klee安装及使用](https://www.bilibili.com/video/BV1ra4y1a7KC)
+
 ## 实验问题
+
 1. 安装docker-ce时指定版本出错  
 ![](images/wrong1.png)    
 解决：不指定序列号，直接安装。  

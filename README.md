@@ -17,9 +17,11 @@
 
 我的实验操作：[web开发-体验最原始的web开发过程---win10+python](https://www.bilibili.com/video/BV1aQ4y1P7GE)  
 
+教师实验重复：[web开发-用django开发一个简单的教务管理系统](https://www.bilibili.com/video/BV1hv411q76y)
+
 ### test0x03-learn-sqlpy
 
-
+[sql简单编写及利用](https://www.bilibili.com/video/BV1AV411r7Ao)
 
 ### test0x04-memory
 
@@ -39,7 +41,7 @@
 
 ### test0x08-klee
 
-
+[klee安装及使用](https://www.bilibili.com/video/BV1ra4y1a7KC)
 
 ### test0x09-cuckoo
 

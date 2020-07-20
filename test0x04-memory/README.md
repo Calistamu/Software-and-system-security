@@ -18,7 +18,7 @@ int main()
 	char* a = (char*)malloc(100);
 	int write_num = 0, read_num = 0;
 	for (int i = 0; i < 4095; i++)
-	{		a[i] = i;
+	{		a[i] = ‘a’;
 	write_num++;
 }
 	cout << "可写入字节数：" << write_num << endl;

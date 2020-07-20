@@ -35,7 +35,7 @@ create table studentsinfo(course_id INTEGER,student_id INTEGER,grades INTEGER);
 ![](video/效果演示.gif)
 >video/web开发教师实验重复.mp4顾名思义
 
-[教师实验重复在线视频]()
+[教师实验重复在线视频](https://www.bilibili.com/video/BV1hv411q76y)
 ## 实验问题
 在查询数据后进行显示时，数据显示报错搞了很久，报错信息如下图所示。
 ![](images/wrong.png)  

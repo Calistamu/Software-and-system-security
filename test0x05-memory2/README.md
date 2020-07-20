@@ -12,6 +12,14 @@
 1. 如下图进行基地址设置
 ![](images/set-address.png)
 2. 如下图是本次实验的代码，让其大致相同。
+```
+#include<stdio.h>
+int main()
+{
+printf("memory1");
+return 0;
+}
+```
 ![](images/samecode.png)
 3. 看到结果，两个程序确实使用了相同的内存地址
 ![](images/samestart.png)
@@ -19,6 +27,27 @@
 #### 1.2 使用VirtualAlloc分配一块相同地址的内存，写入不同的数据，再读出。
 1. 代码及实验结果如下图所示，确实可以使用VirtualAlloc在相同的内存地址写入不同的数据，同样使用的是虚拟映射的原理。
 ![](images/save-sameaddr.png)
+2. 代码如下
+```
+#include<windows.h>
+#include<stdio.h>
+int main() {
+	int i;
+	LPVOID ptr = VirtualAlloc((LPVOID)0x4000000, 3000, MEM_RELEASE, PAGE_READWRITE);
+		ptr = VirtualAlloc(ptr, 3000,MEM_COMMIT, PAGE_READWRITE);
+		char* char_ptr = static_cast<char*>(ptr);
+		for (i = 0; i < 3000; i++)
+		{
+			char_ptr[i] = 'a';
+		}
+		for (i = 0; i < 3000; i++)
+		{
+			printf("%c", char_ptr[i]);
+		}
+		VirtualFree(ptr, 0, MEM_RELEASE);
+		return 0;
+}
+```
 ### 2. 配置一个Windbg双机内核调试环境
 #### 实验环境
 物理机(Host):已安装windbg  
@@ -74,7 +103,7 @@
 ![](images/wrong3.png)
 * 对于四级页表，x64 虚拟地址共 64 位，高 16 位为符号扩展，要么全 0，要么全 1。Windows 中，全 1 表示内核地址，全 0 表示用户态地址。低 48 位划分：    
 
-| 47-39(9 位) | 38-30(9 位) | 29-21(9 位) | 20-12(9 位) | 11-0(12 位) |  
+| 47-39(9 位) | 38-30(9 位) | 29-21(9 位) | 20-12(9 位) | 11-0(12 位) |
 | ----- | ----- | ----- | ----- | ----- |
 |PML4E 索引(PXE)|PDPTE 索引(PPE)|PDE(页目录条目) 索引|PTE(页表条目) 索引|页内偏移|
 

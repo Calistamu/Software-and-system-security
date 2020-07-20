@@ -25,15 +25,15 @@
 
 ### test0x04-memory
 
-
+[内存管理实验一](https://www.bilibili.com/video/BV1Gt4y1X7sa)
 
 ### test0x05-memory2
 
-
+[内存管理实验二]()
 
 ### test0x06-shellcode
 
-
+[shellcode示例学习及自我编写](https://www.bilibili.com/video/BV1Cv411q7V8)
 
 ### test0x07-fuzzing
 

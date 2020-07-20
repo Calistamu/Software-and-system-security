@@ -12,9 +12,11 @@
 #### shellcode示例1-linux-64位  
 功能：Kill All Processes   
 [shellcode-1来源](https://www.exploit-db.com/shellcodes/46492)
+
 ##### 实验环境
 虚拟机：kali 64位  
 物理机：win10
+
 ##### 实验步骤
 1. scp拷贝shell-test.c文件到kali中  
 2. 将shell-test.c编译链接成可执行文件```gcc -fno-stack-protector -z execstack shell-test.c -o shell-test```
@@ -47,9 +49,11 @@ ret();
 #### shellcode示例2-linux-32位
 功能：deletes the file declared in "fname"  
 [shellcode-2来源](https://www.exploit-db.com/shellcodes/46870)
+
 ##### 实验环境
 虚拟机：ubuntu-16.10-server-32位  
 物理机：win10
+
 ##### 实验步骤
 1. 编译链接，有两种方式：  
 ```
@@ -72,6 +76,7 @@ gcc -fno-stack-protector -z execstack delete.c
 ##### 实验环境
 虚拟机：xp-sp3-32位  
 物理机：win10
+
 ##### 实验步骤
 1. 将汇编语言保存为winexec.asm,然后使用下列命令编译链接：  
 ```
@@ -101,6 +106,7 @@ ld.exe -o winexec.exe exec.obj
 #### shellcode示例4-win7-64位
 功能：WinExec() with ExitThread()  
 [shellcode-4来源](https://www.exploit-db.com/shellcodes/13521)
+
 ##### 实验环境
 虚拟机：win7 professional 64位  
 物理机：win10
@@ -195,7 +201,12 @@ rd "C:\Folder1" /S /Q
 ![](images/delete-wrong2.png)  
 解决：重启后删除成功。    
 分析：实验中使用了Release文件夹中的进程没有结束彻底。  
+## 实验效果
+
+[shellcode示例学习及自我编写](https://www.bilibili.com/video/BV1Cv411q7V8)
+
 ## 实验总结
+
 1. 经过此次实验作业，加深了对汇编语言的理解和感受，学好汇编太重要了。首先是AT&T与Intel风格的汇编语言区别:  
 DOS/Windows 下的汇编语言代码都是 Intel 风格的，而 Linux 和 Unix 系统中更多采用的是 AT&T 格式。  
 2. shellcode示例C代码中多次使用到了函数指针。函数指针值得学习：  
@@ -236,11 +247,11 @@ ldr的定义：
 在Windows下实现反弹shell，比Linux多了一个步骤，启动或者初始化winsock库，之后创建cmd.exe进程然后TCP连接端口/打开监听方法都是相近的。  
 需要注意的使用C编程可以使用Socket结合双管道进行通信，但是用汇编管道编写比较麻烦。不建议使用管道来进行通信。解决方案是使用WSASocket代替Socket，这个函数支持IO重叠。
 ## 参考文献
-[www.exploit-db.com-shellcode](https://www.exploit-db.com/shellcodes)  
 [!peb](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/-peb)  
 [PEB结构学习](https://www.cnblogs.com/binlmmhc/p/6501545.html)  
 [PEB structure](https://docs.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb)  
-[Process Environment Block](https://en.wikipedia.org/wiki/Process_Environment_Block)   [PEB_LDR_DATA structure](https://docs.microsoft.com/zh-cn/windows/win32/api/winternl/ns-winternl-peb_ldr_data)   
+[Process Environment Block](https://en.wikipedia.org/wiki/Process_Environment_Block)   
+[PEB_LDR_DATA structure](https://docs.microsoft.com/zh-cn/windows/win32/api/winternl/ns-winternl-peb_ldr_data)   
 [PE Format](https://docs.microsoft.com/en-us/windows/win32/debug/pe-format)  
 [汇编语言--Linux 汇编语言开发指南](https://zhuanlan.zhihu.com/p/54853591)  
 [Raw Linux Threads via System Calls](https://nullprogram.com/blog/2015/05/15/)  

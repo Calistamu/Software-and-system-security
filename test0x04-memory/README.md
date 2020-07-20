@@ -18,7 +18,7 @@ int main()
 	char* a = (char*)malloc(100);
 	int write_num = 0, read_num = 0;
 	for (int i = 0; i < 4095; i++)
-	{		a[i] = ‘a’;
+	{		a[i] = i;
 	write_num++;
 }
 	cout << "可写入字节数：" << write_num << endl;
@@ -37,8 +37,9 @@ int main()
 2. 如果字节数刚好等于4096或小于4096，可以正常运行，可以写入，也可以读取，但写入字节数和读取字节数不一样。
 ![](images/wrong-2.png)
 这是因为我们只分配了100字节，写入时出现了堆损坏报错，写入时超出了已分配的长度，覆盖了多余的内存因此读取为128字节。
-![](images/wrong-3.png)
-3. 结论：经过实验，加深了对“以4KB（页）作为基本管理单元的虚拟内存管理”的理解。
+* 因为VirtualAlloc对于分配的内存有一个保留区域**MEM_RESERVE**，单位是64字节，因此10超出了64字节的时候会再分配就是64的倍数128字节。
+3. ![](images/wrong-3.png)
+4. 结论：经过实验，加深了对“以4KB（页）作为基本管理单元的虚拟内存管理”的理解。
 ### 二、VirtualAlloc分配内存
 实验代码：  
 >code/virtualtry.cpp
@@ -50,7 +51,14 @@ int main()
 ![](images/readonly.png)
 3. VirtualFree该段内存,再对这段内存进行读写，得到结果：异常退出,结果如下图所示  
 ![](images/virtualfree.png)  
+## 实验效果
+
+> video/memory1.mp4
+
+[内存管理实验一](https://www.bilibili.com/video/BV1Gt4y1X7sa)
+
 ## 实验总结
+
 经过此次实验明白：内存的有效性和访问属性，都是以4Kb为单位的，访问属性在分配内存时可以设置。
 ## 参考文献
 [VirtualAlloc](https://docs.microsoft.com/zh-cn/windows/win32/api/memoryapi/nf-memoryapi-virtualalloc)  

